@@ -11,7 +11,7 @@ export const isAvailable = async (cmd: string) => {
         stdio: 'ignore',
     })
         .then(() => true)
-        .catch(e => {
+        .catch((e) => {
             // @ts-ignore
             return e.code !== 'ENOENT';
         });
@@ -68,7 +68,11 @@ export class GIT {
         });
     }
 
-    public static async newBranch(branch: string, description?: string, path?: string) {
+    public static async newBranch(
+        branch: string,
+        description?: string,
+        path?: string,
+    ) {
         if (!(await this.isAvailable())) {
             throw new Error('Git is not available');
         }
@@ -80,10 +84,14 @@ export class GIT {
             stdio: ['inherit', 'inherit', 'inherit'],
         });
         if (description) {
-            await execa('git', ['config', `branch.${branch}.description`, description], {
-                cwd: cmdPath,
-                stdio: ['inherit', 'inherit', 'inherit'],
-            });
+            await execa(
+                'git',
+                ['config', `branch.${branch}.description`, description],
+                {
+                    cwd: cmdPath,
+                    stdio: ['inherit', 'inherit', 'inherit'],
+                },
+            );
         }
     }
 

@@ -19,7 +19,7 @@ export class Commands {
         program: CommanderCommand,
         actionCallback: ActionCallback,
     ) {
-        this.getCommands().forEach(command =>
+        this.getCommands().forEach((command) =>
             command.attach(program, actionCallback),
         );
     }

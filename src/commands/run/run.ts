@@ -5,7 +5,7 @@ import {
     CommandProcessor,
     Implements,
 } from '../type';
-import {Application} from '../../lib/application';
+import { Application } from '../../lib/application';
 
 @Implements<CommandProcessor>()
 export class CommandRun {
@@ -33,6 +33,7 @@ export class CommandRun {
         application: Application,
         args: CommandActionArguments,
     ) {
+        // eslint-disable-next-line no-console
         console.log('Executing command "run"');
     }
 }

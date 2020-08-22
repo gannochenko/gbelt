@@ -13,7 +13,6 @@ import { Nullable, ObjectLiteral } from '../type';
 const d = debug('app');
 
 export class Application {
-
     private introShown = false;
 
     public async run() {
@@ -28,6 +27,7 @@ export class Application {
         }
 
         clear();
+        // eslint-disable-next-line no-console
         console.log(
             chalk.red(
                 figlet.textSync('GitHub Trick', { horizontalLayout: 'full' }),
@@ -50,7 +50,7 @@ export class Application {
             .option('-d, --debug', 'output an additional debug info');
 
         // @ts-ignore
-        Commands.attachCommands(program, command => {
+        Commands.attachCommands(program, (command) => {
             commandToRun = command.command;
             commandArguments = command.arguments || {};
         });

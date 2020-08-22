@@ -1,6 +1,6 @@
 import { Command as CommanderCommand } from 'commander';
 import { ObjectLiteral } from '../type';
-import {Application} from '../lib/application';
+import { Application } from '../lib/application';
 
 export type CommandActionArguments = ObjectLiteral;
 
@@ -16,7 +16,10 @@ interface CommandProcessorInstance {}
 export interface CommandProcessor {
     new (): CommandProcessorInstance;
     attach(program: CommanderCommand, actionCallback: ActionCallback): void;
-    process(application: Application, args?: CommandActionArguments): Promise<void>;
+    process(
+        application: Application,
+        args?: CommandActionArguments,
+    ): Promise<void>;
 }
 
 export function Implements<T>() {

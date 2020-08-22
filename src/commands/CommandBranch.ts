@@ -9,8 +9,8 @@ import {
 } from './type';
 import { Application } from '../lib/application';
 import { GIT } from '../lib/git';
-import { TextConverter } from '../lib/text-converter';
 import { composeBranchName } from '../lib/util';
+import { RC } from '../lib/rc';
 
 const d = debug('branch');
 
@@ -83,6 +83,11 @@ export class CommandBranch {
                 name: 'id',
             },
         ]);
+
+        const { ticketIdPrefix } = await RC.getConfig();
+        if (ticketIdPrefix && !answers.id.startsWith(ticketIdPrefix)) {
+            answers.id = `${ticketIdPrefix}${answers.id}`;
+        }
 
         d(answers);
 

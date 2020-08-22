@@ -1,0 +1,5 @@
+module.exports = {
+    developmentBranch: 'master',
+    deploymentBranch: 'master',
+    ticketIdPrefix: 'LD-',
+};

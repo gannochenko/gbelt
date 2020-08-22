@@ -13,6 +13,7 @@ type GitHubPRType = {
     body: string;
     head: string;
     base?: string;
+    draft?: boolean;
 };
 
 export class GitHub {
@@ -31,8 +32,8 @@ export class GitHub {
     public async createPR(options: GitHubPRType) {
         return this.getOctokit().request('POST /repos/{owner}/{repo}/pulls', {
             base: 'master',
-            ...options,
             draft: false,
+            ...options,
         });
     }
 

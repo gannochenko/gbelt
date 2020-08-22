@@ -8,6 +8,7 @@ import {
 import { Application } from '../lib/application';
 import { GitHub } from '../lib/github';
 import { GIT } from '../lib/git';
+import { RC } from '../lib/rc';
 
 @Implements<CommandProcessor>()
 export class CommandSubmit {
@@ -32,25 +33,28 @@ export class CommandSubmit {
         application: Application,
         args: CommandActionArguments,
     ) {
-        // eslint-disable-next-line no-console
-        const github = new GitHub();
-
         const branch = await GIT.getCurrentBranch();
+
         if (!branch || !branch.description) {
             return;
         }
-
         const remoteInfo = await GIT.getRemoteInfo();
+
         if (!remoteInfo) {
             return;
         }
 
+        const github = new GitHub();
+
         const body = (await github.getTemplate()).replace(/#TICKET_ID#/g, branch.description.id);
+
+        const config = await RC.getConfig();
 
         await github.createPR({
             head: branch.name,
             ...remoteInfo,
             title: `${branch.description.type}: ${branch.description.title} [${branch.description.id}]`,
+            base: config.developmentBranch || undefined,
             body,
         });
     }

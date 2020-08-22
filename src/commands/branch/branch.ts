@@ -1,5 +1,6 @@
 import { Command as CommanderCommand } from 'commander';
 import inquirer from 'inquirer';
+import debug from 'debug';
 import {
     ActionCallback,
     CommandActionArguments,
@@ -9,6 +10,8 @@ import {
 import {Application} from '../../lib/application';
 import { GIT } from '../../lib/git';
 import { TextConverter } from '../../lib/text-converter';
+
+const d = debug('branch');
 
 @Implements<CommandProcessor>()
 export class CommandBranch {
@@ -79,6 +82,8 @@ export class CommandBranch {
                     name: 'id',
                 },
             ]);
+
+        d(answers);
 
         const branchName = `${answers.type}/${TextConverter.toKebabSpecial(answers.title)}-${TextConverter.toKebabSpecial(answers.id)}`;
         const branchDescription = JSON.stringify(answers);

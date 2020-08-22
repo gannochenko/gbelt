@@ -3,11 +3,14 @@ import clear from 'clear';
 import figlet from 'figlet';
 import commander from 'commander';
 import process from 'process';
+import debug from 'debug';
 
 import { VERSION } from './constants';
 import { Commands } from '../commands/commands';
 import { CommandAction, CommandProcessor } from '../commands/type';
 import { Nullable, ObjectLiteral } from '../type';
+
+const d = debug('app');
 
 export class Application {
 

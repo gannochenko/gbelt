@@ -40,20 +40,18 @@ export class CommandSubmit {
             return;
         }
 
+        const remoteInfo = await GIT.getRemoteInfo();
+        if (!remoteInfo) {
+            return;
+        }
+
+        const body = (await github.getTemplate()).replace(/#TICKET_ID#/g, branch.description.id);
+
         await github.createPR({
             head: branch.name,
-            owner: 'gannochenko',
-            repo: 'ghtrick',
+            ...remoteInfo,
             title: `${branch.description.type}: ${branch.description.title} [${branch.description.id}]`,
-            body: `## Description
-- tmp PR
-
-## Dependencies
-- do this before or along with merging
-
-## Ticket
-https://your-bugtracker.com/ticket/GANN-2/
-`,
+            body,
         });
     }
 }

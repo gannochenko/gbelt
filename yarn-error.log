@@ -1,8 +1,8 @@
 Arguments: 
-  /Users/sergei/.nvm/versions/node/v12.6.0/bin/node /usr/local/Cellar/yarn/1.17.3/libexec/bin/yarn.js add @types/debug --dev
+  /Users/sergei/.nvm/versions/node/v12.6.0/bin/node /usr/local/Cellar/yarn/1.17.3/libexec/bin/yarn.js add @types/find-up-all --dev
 
 PATH: 
-  /Users/sergei/.nvm/versions/node/v12.6.0/bin:/Users/sergei/Library/Android/sdk/platform-tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
+  /Users/sergei/Library/Android/sdk/platform-tools:/Users/sergei/.nvm/versions/node/v12.6.0/bin:/Users/sergei/Library/Android/sdk/platform-tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
 
 Yarn version: 
   1.17.3
@@ -14,20 +14,22 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: connect ENETUNREACH 104.16.27.35:443 - Local (0.0.0.0:53635)
-      at internalConnect (net.js:835:16)
-      at defaultTriggerAsyncIdScope (internal/async_hooks.js:301:12)
-      at emitLookup (net.js:978:9)
-      at /usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:107239:28
-      at /usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:107148:13
-      at RawTask.module.exports.RawTask.call (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:83456:19)
-      at flush (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:83538:29)
-      at processTicksAndRejections (internal/process/task_queues.js:75:11)
+  Error: https://registry.yarnpkg.com/@types%2ffind-up-all: Not found
+      at Request.params.callback [as _callback] (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:66830:18)
+      at Request.self.callback (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:140464:22)
+      at Request.emit (events.js:203:13)
+      at Request.<anonymous> (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:141436:10)
+      at Request.emit (events.js:203:13)
+      at IncomingMessage.<anonymous> (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:141358:12)
+      at Object.onceWrapper (events.js:291:20)
+      at IncomingMessage.emit (events.js:208:15)
+      at endReadableNT (_stream_readable.js:1154:12)
+      at processTicksAndRejections (internal/process/task_queues.js:77:11)
 
 npm manifest: 
   {
       "name": "@gannochenko/ghtrick",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "license": "MIT",
       "main": "build.cjs/index.js",
       "module": "build.esm/index.js",
@@ -61,6 +63,7 @@ npm manifest:
           "debug": "^4.1.1",
           "execa": "^4.0.3",
           "figlet": "^1.5.0",
+          "find-up-all": "^1.0.2",
           "fs-extra": "^9.0.1",
           "inquirer": "^7.3.3"
       },
@@ -84,6 +87,7 @@ npm manifest:
           "@semantic-release/release-notes-generator": "^9.0.1",
           "@team-griffin/install-self-peers": "^1.1.1",
           "@types/clear": "^0.1.0",
+          "@types/debug": "^4.1.5",
           "@types/figlet": "^1.2.0",
           "@types/fs-extra": "^9.0.1",
           "@types/inquirer": "^7.3.1",
@@ -897,6 +901,11 @@ Lockfile:
     version "1.1.1"
     resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
     integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
+  
+  "@types/debug@^4.1.5":
+    version "4.1.5"
+    resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.5.tgz#b14efa8852b7768d898906613c23f688713e02cd"
+    integrity sha512-Q1y515GcOdTHgagaVFhHnIFQ38ygs/kmxdNpvpou+raI9UO3YZcHDngBSYKQklcKlvA7iuQlmIKbzvmxcOE9CQ==
   
   "@types/eslint-visitor-keys@^1.0.0":
     version "1.0.0"
@@ -2949,6 +2958,13 @@ Lockfile:
     version "1.0.2"
     resolved "https://registry.yarnpkg.com/find-npm-prefix/-/find-npm-prefix-1.0.2.tgz#8d8ce2c78b3b4b9e66c8acc6a37c231eb841cfdf"
     integrity sha512-KEftzJ+H90x6pcKtdXZEPsQse8/y/UnvzRKrOSQFprnrGaFuJ62fVkP34Iu2IYuMvyauCyoLTNkJZgrrGA2wkA==
+  
+  find-up-all@^1.0.2:
+    version "1.0.2"
+    resolved "https://registry.yarnpkg.com/find-up-all/-/find-up-all-1.0.2.tgz#456e83038ebd0abbb801e3d783a971880eead751"
+    integrity sha512-zh6Jn6iFk+sA+ZPJqTkEK3BFpx/rTiR4QzOigLKpEtgCaHgUT2oAxBNLICjOaMaVyycAIhpOXEN8szlomSAljA==
+    dependencies:
+      path-exists "^3.0.0"
   
   find-up@^2.0.0, find-up@^2.1.0:
     version "2.1.0"

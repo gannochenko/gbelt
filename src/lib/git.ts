@@ -1,4 +1,5 @@
 import execa from 'execa';
+import { URL } from 'url';
 import { BranchDescriptionType } from './type';
 
 export const isAvailable = async (cmd: string) => {
@@ -133,6 +134,34 @@ export class GIT {
         }
 
         return info;
+    }
+
+    public static async getRemoteInfo(which = 'origin', path?: string) {
+        if (!(await this.isAvailable())) {
+            throw new Error('Git is not available');
+        }
+
+        const cmdPath = path || process.cwd();
+
+        const result = await execa('git', ['remote', `get-url`, which], {
+            cwd: cmdPath,
+        });
+
+        if (result.exitCode) {
+            return null;
+        }
+
+        const urlMatch = result.stdout.trim().match(/git@github\.com:(.+)\/(.+)\.git/);
+        if (!urlMatch) {
+            return null;
+        }
+
+        const [, owner, repo] = urlMatch;
+
+        return {
+            owner,
+            repo,
+        };
     }
 
     public static async isAvailable() {

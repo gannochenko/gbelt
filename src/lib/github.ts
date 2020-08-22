@@ -1,4 +1,10 @@
 import { Octokit } from "@octokit/core";
+// @ts-ignore
+import findUpAll from 'find-up-all';
+import { readFile as readFileCb } from 'fs';
+import { promisify } from 'util';
+
+const readFile = promisify(readFileCb);
 
 type GitHubPRType = {
     owner: string;
@@ -28,5 +34,17 @@ export class GitHub {
             ...options,
             draft: false,
         });
+    }
+
+    public async getTemplate(path?: string) {
+        const files = await findUpAll('.github/PULL_REQUEST_TEMPLATE.md', {
+            cwd: path || process.cwd(),
+        });
+
+        if (!files || !files[0]) {
+            return '';
+        }
+
+        return (await readFile(files[0]).catch(() => '')).toString('utf8');
     }
 }

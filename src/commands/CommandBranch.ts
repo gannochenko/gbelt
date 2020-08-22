@@ -6,10 +6,10 @@ import {
     CommandActionArguments,
     CommandProcessor,
     Implements,
-} from '../type';
-import { Application } from '../../lib/application';
-import { GIT } from '../../lib/git';
-import { TextConverter } from '../../lib/text-converter';
+} from './type';
+import { Application } from '../lib/application';
+import { GIT } from '../lib/git';
+import { TextConverter } from '../lib/text-converter';
 
 const d = debug('branch');
 

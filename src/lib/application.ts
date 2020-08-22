@@ -18,7 +18,12 @@ export class Application {
     public async run() {
         await this.showIntro();
         const command = this.processCLI();
-        await command.command.process(this, command.arguments);
+        if (!command) {
+            // eslint-disable-next-line no-console
+            console.log('No command specified. Try -h for available commands.');
+        }
+
+        await command!.command.process(this, command!.arguments);
     }
 
     public async showIntro() {
@@ -37,7 +42,7 @@ export class Application {
         this.introShown = true;
     }
 
-    private processCLI(): CommandAction {
+    private processCLI(): CommandAction | null {
         const program = new commander.Command();
 
         let commandToRun: Nullable<CommandProcessor> = null;
@@ -59,6 +64,10 @@ export class Application {
 
         if (!commandToRun) {
             commandToRun = Commands.getDefaultCommand();
+        }
+
+        if (!commandToRun) {
+            return null;
         }
 
         return {

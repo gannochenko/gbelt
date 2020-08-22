@@ -4,26 +4,24 @@ import {
     CommandActionArguments,
     CommandProcessor,
     Implements,
-} from '../type';
-import { Application } from '../../lib/application';
+} from './type';
+import { Application } from '../lib/application';
+import { GitHub } from '../lib/github';
 
 @Implements<CommandProcessor>()
-export class CommandRun {
+export class CommandSubmit {
     public static attach(
         program: CommanderCommand,
         actionCallback: ActionCallback,
     ) {
         program
-            .command('run [something]')
-            .alias('r')
-            .description('Run something')
-            .option('-y, --yes', 'Use the default')
-            .action((something: string, command: CommanderCommand) =>
+            .command('submit')
+            .alias('s')
+            .description('Create a PR and submit')
+            .action((command: CommanderCommand) =>
                 actionCallback({
                     command: this,
                     arguments: {
-                        something,
-                        yes: command.yes,
                     },
                 }),
             );
@@ -34,6 +32,8 @@ export class CommandRun {
         args: CommandActionArguments,
     ) {
         // eslint-disable-next-line no-console
-        console.log('Executing command "run"');
+        const github = new GitHub();
+
+        await github.createPR();
     }
 }

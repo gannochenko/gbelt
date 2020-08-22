@@ -10,6 +10,10 @@ export class TextConverter {
         return result;
     }
 
+    public static toKebabSpecial(value: string) {
+        return value.toLowerCase().trim().replace(/\s+/g, '-');
+    }
+
     public static toPascal(value: string) {
         return caseFormatter.snakeToPascal(this.toSnake(value));
     }

@@ -36,7 +36,7 @@ export class CommandBranch {
             .prompt([
                 {
                     message: 'What kind of ticket are you working on?',
-                    name: 'ticket_type',
+                    name: 'type',
                     type: 'list',
                     choices: [
                         {
@@ -72,18 +72,20 @@ export class CommandBranch {
                 },
                 {
                     message: 'What does the ticket say?',
-                    name: 'ticket_title',
+                    name: 'title',
                 },
                 {
-                    message: 'What is the ticket number?',
-                    name: 'ticket_number',
+                    message: 'What is the ticket ID?',
+                    name: 'id',
                 },
             ]);
 
-        console.log(`${answers.ticket_type}/${TextConverter.toKebab(answers.ticket_title)}-${TextConverter.toKebab(answers.ticket_number)}`);
+        const branchName = `${answers.type}/${TextConverter.toKebabSpecial(answers.title)}-${TextConverter.toKebabSpecial(answers.id)}`;
+        const branchDescription = JSON.stringify(answers);
 
         await GIT.newBranch(
-            `${answers.ticket_type}/${TextConverter.toKebab(answers.ticket_title)}-${TextConverter.toKebab(answers.ticket_number)}`
+            branchName,
+            branchDescription,
         );
     }
 }

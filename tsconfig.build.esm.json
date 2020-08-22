@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "es6",
+    "target": "es6",
+    "outDir": "./build.esm/",
+    "types": []
+  },
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules",
+    "build",
+    "build:esm",
+    "build:cjs",
+    
+    
+    
+    "**/**/*.test.ts"
+  ]
+}

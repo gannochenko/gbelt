@@ -7,6 +7,7 @@ import {
 } from './type';
 import { Application } from '../lib/application';
 import { GitHub } from '../lib/github';
+import { GIT } from '../lib/git';
 
 @Implements<CommandProcessor>()
 export class CommandSubmit {
@@ -34,6 +35,25 @@ export class CommandSubmit {
         // eslint-disable-next-line no-console
         const github = new GitHub();
 
-        await github.createPR();
+        const branch = await GIT.getCurrentBranch();
+        if (!branch || !branch.description) {
+            return;
+        }
+
+        await github.createPR({
+            head: branch.name,
+            owner: 'gannochenko',
+            repo: 'ghtrick',
+            title: `${branch.description.type}: ${branch.description.title} [${branch.description.id}]`,
+            body: `## Description
+- tmp PR
+
+## Dependencies
+- do this before or along with merging
+
+## Ticket
+https://your-bugtracker.com/ticket/GANN-2/
+`,
+        });
     }
 }

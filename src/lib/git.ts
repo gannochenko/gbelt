@@ -1,4 +1,5 @@
 import execa from 'execa';
+import { BranchDescriptionType } from './type';
 
 export const isAvailable = async (cmd: string) => {
     const cmdParts = cmd.trim().split(' ');
@@ -68,7 +69,7 @@ export class GIT {
         });
     }
 
-    public static async newBranch(
+    public static async createBranch(
         branch: string,
         description?: string,
         path?: string,
@@ -93,6 +94,45 @@ export class GIT {
                 },
             );
         }
+    }
+
+    public static async getCurrentBranch(path?: string): Promise<{name: string; description?: BranchDescriptionType} | null> {
+        if (!(await this.isAvailable())) {
+            throw new Error('Git is not available');
+        }
+
+        const cmdPath = path || process.cwd();
+
+        let result = await execa('git', ['branch'], {
+            cwd: cmdPath,
+        });
+
+        if (result.exitCode) {
+            return null;
+        }
+
+        const current = result.stdout.match(/\*\s+(.+)\n/m);
+        if (!current || !current[1]) {
+            return null;
+        }
+
+        const name = current[1];
+
+        result = await execa('git', ['config', `branch.${name}.description`], {
+            cwd: cmdPath,
+        });
+
+        const info: {name: string; description?: BranchDescriptionType} = {
+            name,
+        };
+
+        try {
+            info.description = JSON.parse(result.stdout) as BranchDescriptionType;
+        } catch(e) {
+            return info;
+        }
+
+        return info;
     }
 
     public static async isAvailable() {

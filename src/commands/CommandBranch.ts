@@ -10,6 +10,7 @@ import {
 import { Application } from '../lib/application';
 import { GIT } from '../lib/git';
 import { TextConverter } from '../lib/text-converter';
+import { composeBranchName } from '../lib/util';
 
 const d = debug('branch');
 
@@ -85,11 +86,9 @@ export class CommandBranch {
 
         d(answers);
 
-        const branchName = `${answers.type}/${TextConverter.toKebabSpecial(
-            answers.title,
-        )}-${TextConverter.toKebabSpecial(answers.id)}`;
+        const branchName = composeBranchName(answers);
         const branchDescription = JSON.stringify(answers);
 
-        await GIT.newBranch(branchName, branchDescription);
+        await GIT.createBranch(branchName, branchDescription);
     }
 }

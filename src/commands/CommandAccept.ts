@@ -10,19 +10,20 @@ import { Application } from '../lib/application';
 import { GitHub } from '../lib/github';
 import { GIT } from '../lib/git';
 import { RC } from '../lib/rc';
+import { composeCommitMessage } from '../lib/util';
 
 const d = debug('submit');
 
 @Implements<CommandProcessor>()
-export class CommandSubmit {
+export class CommandAccept {
     public static attach(
         program: CommanderCommand,
         actionCallback: ActionCallback,
     ) {
         program
-            .command('submit')
-            .alias('s')
-            .description('Create a feature PR')
+            .command('accept')
+            .alias('a')
+            .description('Merge a PR into the dev branch')
             .action((command: CommanderCommand) =>
                 actionCallback({
                     command: this,
@@ -52,23 +53,38 @@ export class CommandSubmit {
         d('Config', config);
 
         const github = new GitHub();
-        const body = (await github.getTemplate()).replace(/#TICKET_ID#/g, branch.description.id);
-        const options = {
-            head: branch.name,
+
+        const prList = await github.getPRList({
             ...remoteInfo,
-            title: `${branch.description.type}: ${branch.description.title} [${branch.description.id}]`,
             base: config.developmentBranch || undefined,
-            draft: !!config.useDraftPR,
-            body,
-        };
+            head: branch.name,
+        });
 
-        d('POST /repos/{owner}/{repo}/pulls', options);
+        if (!prList.data.length) {
+            console.error(`No PR found for the current feature branch "${branch.name}"`);
+            console.error('Make one either on site or via "ghtrick submit".');
+            return;
+        }
 
-        const result = await github.createPR(options);
-        if (result.data.id) {
-            d('Result', result.data);
+        if (prList.data.length > 1) {
+            console.error(`There is more than one PR matching the current feature branch "${branch.name}"`);
+            console.error('Only one PR is allowed to have.');
+            return;
+        }
+
+        const pr = prList.data[0];
+
+        const result = await github.mergePR({
+            ...remoteInfo,
+            pull_number: pr.number,
+            commit_title: composeCommitMessage(branch.description, pr.number),
+        });
+
+        if (result.status === 200) {
             // eslint-disable-next-line no-console
-            console.log(`PR was created. Check out: ${result.data.html_url}`);
+            console.log(
+                `The feature PR #${pr.number} was successfully merged.`,
+            );
         }
     }
 }

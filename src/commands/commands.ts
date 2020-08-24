@@ -2,11 +2,12 @@ import { Command as CommanderCommand } from 'commander';
 
 import { CommandSubmit } from './CommandSubmit';
 import { CommandBranch } from './CommandBranch';
+import { CommandAccept } from './CommandAccept';
 import { ActionCallback } from './type';
 
 export class Commands {
     protected static getCommands() {
-        return [CommandSubmit, CommandBranch];
+        return [CommandSubmit, CommandBranch, CommandAccept];
     }
 
     public static getDefaultCommand() {

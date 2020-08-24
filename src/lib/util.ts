@@ -8,3 +8,5 @@ const sanitizeString = (value: string) => TextConverter.toKebabSpecial(
 export const composeBranchName = (description: BranchDescriptionType) => `${description.type}/${sanitizeString(
     description.title,
 )}-${sanitizeString(description.id)}`;
+
+export const composeCommitMessage = (description: BranchDescriptionType, prId?: number) => `${description.type}: ${description.title} [${description.id}]${prId ? ` (#${prId})` : ''}`;

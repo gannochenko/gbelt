@@ -10,10 +10,28 @@ type GitHubPRType = {
     owner: string;
     repo: string;
     title: string;
-    body: string;
+    body?: string;
     head: string;
     base?: string;
     draft?: boolean;
+};
+
+type GitHubPRListType = {
+    owner: string;
+    repo: string;
+    head: string;
+    base?: string;
+};
+
+type GitHubPRMergeType = {
+    owner: string;
+    repo: string;
+    // eslint-disable-next-line camelcase
+    merge_method?: string;
+    // eslint-disable-next-line camelcase
+    commit_title?: string;
+    // eslint-disable-next-line camelcase
+    pull_number?: number;
 };
 
 export class GitHub {
@@ -47,5 +65,22 @@ export class GitHub {
         }
 
         return (await readFile(files[0]).catch(() => '')).toString('utf8');
+    }
+
+    public async getPRList(options: GitHubPRListType) {
+        return this.getOctokit().request('GET /repos/{owner}/{repo}/pulls', {
+            base: 'master',
+            ...options,
+            state: 'open',
+            draft: false,
+            accept: 'Setting to application/vnd.github.v3+json',
+        });
+    }
+
+    public async mergePR(options: GitHubPRMergeType) {
+        return this.getOctokit().request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge', {
+            merge_method: 'squash',
+            ...options,
+        });
     }
 }

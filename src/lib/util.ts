@@ -1,6 +1,10 @@
 import { BranchDescriptionType } from './type';
 import { TextConverter } from './text-converter';
 
-export const composeBranchName = (description: BranchDescriptionType) => `${description.type}/${TextConverter.toKebabSpecial(
+const sanitizeString = (value: string) => TextConverter.toKebabSpecial(
+    value,
+).toLowerCase().replace(/[^a-z0-9-]/g, '');
+
+export const composeBranchName = (description: BranchDescriptionType) => `${description.type}/${sanitizeString(
     description.title,
-)}-${TextConverter.toKebabSpecial(description.id)}`;
+)}-${sanitizeString(description.id)}`;

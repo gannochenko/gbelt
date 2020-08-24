@@ -6,10 +6,11 @@ import {
     CommandActionArguments,
     CommandProcessor,
     Implements,
-} from '../type';
-import { Application } from '../../lib/application';
-import { GIT } from '../../lib/git';
-import { TextConverter } from '../../lib/text-converter';
+} from './type';
+import { Application } from '../lib/application';
+import { GIT } from '../lib/git';
+import { composeBranchName } from '../lib/util';
+import { RC } from '../lib/rc';
 
 const d = debug('branch');
 
@@ -83,13 +84,16 @@ export class CommandBranch {
             },
         ]);
 
+        const { ticketIdPrefix } = await RC.getConfig();
+        if (ticketIdPrefix && !answers.id.startsWith(ticketIdPrefix)) {
+            answers.id = `${ticketIdPrefix}${answers.id}`;
+        }
+
         d(answers);
 
-        const branchName = `${answers.type}/${TextConverter.toKebabSpecial(
-            answers.title,
-        )}-${TextConverter.toKebabSpecial(answers.id)}`;
+        const branchName = composeBranchName(answers);
         const branchDescription = JSON.stringify(answers);
 
-        await GIT.newBranch(branchName, branchDescription);
+        await GIT.createBranch(branchName, branchDescription);
     }
 }

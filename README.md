@@ -69,6 +69,8 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
+https://www.conventionalcommits.org/en/v1.0.0/
+
 <!--
 [![Preview Screen Shot][product-screenshot]](https://example.com)
 -->

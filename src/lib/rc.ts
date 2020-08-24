@@ -10,6 +10,10 @@ type RCType = {
 
 const d = debug('app');
 
+const defaultSettings = {
+    base: 'master',
+};
+
 export class RC {
     private static config: RCType = {};
 

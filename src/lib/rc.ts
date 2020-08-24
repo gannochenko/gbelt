@@ -18,7 +18,7 @@ const defaultSettings = {
 export class RC {
     private static config: RCType = {};
 
-    public static async getConfig() {
+    public static async getConfig(): Promise<RCType> {
         if (!this.config) {
             const files = await findUpAll('.ghtrickrc', {
                 cwd: process.cwd(),

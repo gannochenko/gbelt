@@ -49,6 +49,8 @@ export class CommandSubmit {
 
         const config = await RC.getConfig();
 
+        d('Config', config);
+
         const github = new GitHub();
         const body = (await github.getTemplate()).replace(/#TICKET_ID#/g, branch.description.id);
         const options = {
@@ -60,10 +62,13 @@ export class CommandSubmit {
             body,
         };
 
-        d(options);
+        d('POST /repos/{owner}/{repo}/pulls', options);
 
         const result = await github.createPR(options);
-
-        console.log(result);
+        if (result.data.id) {
+            d('Result', result.data);
+            // eslint-disable-next-line no-console
+            console.log(`PR was created. Check out: ${result.data.html_url}`);
+        }
     }
 }

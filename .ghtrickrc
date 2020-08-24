@@ -2,4 +2,5 @@ module.exports = {
     developmentBranch: 'master',
     releaseBranch: 'master',
     ticketIdPrefix: 'LD-',
+    useDraftPR: false,
 };

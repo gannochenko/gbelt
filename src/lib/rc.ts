@@ -18,13 +18,16 @@ const defaultSettings = {
 };
 
 export class RC {
-    private static config: RCType = {};
+    private static config?: RCType;
 
     public static async getConfig(): Promise<RCType> {
         if (!this.config) {
             const files = await findUpAll('.ghtrickrc', {
                 cwd: process.cwd(),
             });
+
+            d(files);
+
             if (!files || !files[0]) {
                 return defaultSettings;
             }

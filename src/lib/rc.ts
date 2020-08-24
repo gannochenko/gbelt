@@ -11,7 +11,8 @@ type RCType = {
 const d = debug('app');
 
 const defaultSettings = {
-    base: 'master',
+    developmentBranch: 'master',
+    releaseBranch: 'master',
 };
 
 export class RC {
@@ -23,7 +24,7 @@ export class RC {
                 cwd: process.cwd(),
             });
             if (!files || !files[0]) {
-                return {};
+                return defaultSettings;
             }
 
             const [ rcFile ] = files;
@@ -37,7 +38,7 @@ export class RC {
                     `Was not able to import the RC file located at: ${rcFile}: ${e.message}`,
                 );
                 d(e.stack);
-                return {};
+                return defaultSettings;
             }
         }
 

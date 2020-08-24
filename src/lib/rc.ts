@@ -42,6 +42,6 @@ export class RC {
             }
         }
 
-        return this.config;
+        return { ...defaultSettings, ...this.config };
     }
 }

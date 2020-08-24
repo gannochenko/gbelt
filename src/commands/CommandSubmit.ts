@@ -1,4 +1,5 @@
 import { Command as CommanderCommand } from 'commander';
+import debug from 'debug';
 import {
     ActionCallback,
     CommandActionArguments,
@@ -9,6 +10,8 @@ import { Application } from '../lib/application';
 import { GitHub } from '../lib/github';
 import { GIT } from '../lib/git';
 import { RC } from '../lib/rc';
+
+const d = debug('submit');
 
 @Implements<CommandProcessor>()
 export class CommandSubmit {
@@ -44,18 +47,20 @@ export class CommandSubmit {
             return;
         }
 
-        const github = new GitHub();
-
-        const body = (await github.getTemplate()).replace(/#TICKET_ID#/g, branch.description.id);
-
         const config = await RC.getConfig();
 
-        await github.createPR({
+        const github = new GitHub();
+        const body = (await github.getTemplate()).replace(/#TICKET_ID#/g, branch.description.id);
+        const options = {
             head: branch.name,
             ...remoteInfo,
             title: `${branch.description.type}: ${branch.description.title} [${branch.description.id}]`,
             base: config.developmentBranch || undefined,
             body,
-        });
+        };
+
+        d(options);
+
+        await github.createPR(options);
     }
 }

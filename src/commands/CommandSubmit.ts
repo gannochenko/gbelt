@@ -62,6 +62,8 @@ export class CommandSubmit {
 
         d(options);
 
-        await github.createPR(options);
+        const result = await github.createPR(options);
+
+        console.log(result);
     }
 }

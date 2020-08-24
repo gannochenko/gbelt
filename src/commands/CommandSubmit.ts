@@ -56,6 +56,7 @@ export class CommandSubmit {
             ...remoteInfo,
             title: `${branch.description.type}: ${branch.description.title} [${branch.description.id}]`,
             base: config.developmentBranch || undefined,
+            draft: !!config.useDraftPR,
             body,
         };
 

@@ -6,6 +6,7 @@ type RCType = {
     developmentBranch?: string;
     deploymentBranch?: string;
     ticketIdPrefix?: string;
+    useDraftPR?: boolean;
 };
 
 const d = debug('app');
@@ -13,6 +14,7 @@ const d = debug('app');
 const defaultSettings = {
     developmentBranch: 'master',
     releaseBranch: 'master',
+    useDraftPR: true,
 };
 
 export class RC {

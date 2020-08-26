@@ -10,7 +10,7 @@ import { Application } from '../lib/application';
 import { GitHub } from '../lib/github';
 import { GIT } from '../lib/git';
 import { RC } from '../lib/rc';
-import { composeCommitMessage } from '../lib/util';
+import { composeCommitMessage, getRemoteOrThrow } from '../lib/util';
 
 const d = debug('submit');
 
@@ -42,11 +42,7 @@ export class CommandAccept {
         if (!branch || !branch.description) {
             return;
         }
-        const remoteInfo = await GIT.getRemoteInfo();
-
-        if (!remoteInfo) {
-            return;
-        }
+        const remoteInfo = await getRemoteOrThrow();
 
         const config = await RC.getConfig();
 

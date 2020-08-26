@@ -4,7 +4,7 @@ import debug from 'debug';
 
 type RCType = {
     developmentBranch?: string;
-    deploymentBranch?: string;
+    releaseBranch?: string;
     ticketIdPrefix?: string;
     useDraftPR?: boolean;
 };
@@ -12,7 +12,7 @@ type RCType = {
 const d = debug('app');
 
 const defaultSettings = {
-    developmentBranch: 'master',
+    developmentBranch: 'dev',
     releaseBranch: 'master',
     useDraftPR: true,
 };

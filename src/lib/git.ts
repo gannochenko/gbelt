@@ -1,5 +1,4 @@
 import execa from 'execa';
-import { URL } from 'url';
 import { BranchDescriptionType } from './type';
 
 export const isAvailable = async (cmd: string) => {

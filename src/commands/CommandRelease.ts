@@ -26,7 +26,10 @@ export class CommandRelease {
         program
             .command('release [action]')
             .alias('r')
-            .description('Create and perform a accept')
+            .description(`Create and accept a release. [action] may be one of:
+
+    * ${ACTION_CREATE} - will create a release PR
+    * ${ACTION_ACCEPT} - will merge a currently open release PR`)
             .action((action: string, command: CommanderCommand) =>
                 actionCallback({
                     command: this,

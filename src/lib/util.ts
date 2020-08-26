@@ -1,5 +1,6 @@
 import { BranchDescriptionType } from './type';
 import { TextConverter } from './text-converter';
+import { GIT } from './git';
 
 const sanitizeString = (value: string) => TextConverter.toKebabSpecial(
     value,
@@ -10,3 +11,13 @@ export const composeBranchName = (description: BranchDescriptionType) => `${desc
 )}-${sanitizeString(description.id)}`;
 
 export const composeCommitMessage = (description: BranchDescriptionType, prId?: number) => `${description.type}: ${description.title} [${description.id}]${prId ? ` (#${prId})` : ''}`;
+
+export const getRemoteOrThrow = async () => {
+    const remoteInfo = await GIT.getRemoteInfo();
+
+    if (!remoteInfo) {
+        throw new Error('Unable to read the remote endpoint info. Are you in the git repo folder? Does you repo have a remote?');
+    }
+
+    return remoteInfo;
+};

@@ -23,7 +23,7 @@ export class CommandAccept {
         program
             .command('accept')
             .alias('a')
-            .description('Merge a PR into the dev branch')
+            .description('Merge a feature PR into the dev branch')
             .action((command: CommanderCommand) =>
                 actionCallback({
                     command: this,

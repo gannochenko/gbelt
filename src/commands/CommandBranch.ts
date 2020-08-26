@@ -23,7 +23,7 @@ export class CommandBranch {
         program
             .command('branch')
             .alias('b')
-            .description('Create a new conventional branch')
+            .description('Create a new feature branch')
             .action(() =>
                 actionCallback({
                     command: this,

@@ -22,7 +22,7 @@ export class CommandSubmit {
         program
             .command('submit')
             .alias('s')
-            .description('Create a feature PR')
+            .description('Create a feature PR from the current feature branch')
             .action((command: CommanderCommand) =>
                 actionCallback({
                     command: this,

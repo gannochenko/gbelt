@@ -1,5 +1,5 @@
 module.exports = {
-    developmentBranch: 'master',
+    developmentBranch: 'dev',
     releaseBranch: 'master',
     ticketIdPrefix: 'LD-',
     useDraftPR: false,

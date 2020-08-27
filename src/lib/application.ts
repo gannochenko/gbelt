@@ -49,7 +49,7 @@ export class Application {
         let commandArguments: ObjectLiteral = {};
 
         program
-            .name('ghtrick')
+            .name('gbelt')
             .version(VERSION, '-v, --version', 'output the current version')
             .description('GitHub Trick: helps to automate PR routine')
             .option('-d, --debug', 'output an additional debug info');

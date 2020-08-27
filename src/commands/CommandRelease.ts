@@ -10,7 +10,7 @@ import {
 import { Application } from '../lib/application';
 import { GitHub } from '../lib/github';
 import { RC } from '../lib/rc';
-import { composeCommitMessage, getRemoteOrThrow } from '../lib/util';
+import { getRemoteOrThrow } from '../lib/util';
 
 const d = debug('release');
 
@@ -89,7 +89,7 @@ export class CommandRelease {
 
         if (action === ACTION_ACCEPT) {
             if (!prList.length) {
-                console.log(`You don't have any release PR created. Create one with 'ghtrick release ${ACTION_CREATE}'.`);
+                console.log(`You don't have any release PR created. Create one with 'gbelt release ${ACTION_CREATE}'.`);
                 return;
             }
 

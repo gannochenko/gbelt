@@ -58,7 +58,7 @@ export class CommandAccept {
 
         if (!prList.data.length) {
             console.error(`No PR found for the current feature branch "${branch.name}"`);
-            console.error('Make one either on site or via "ghtrick submit".');
+            console.error('Make one either on site or via "gbelt submit".');
             return;
         }
 

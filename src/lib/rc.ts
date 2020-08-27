@@ -22,7 +22,7 @@ export class RC {
 
     public static async getConfig(): Promise<RCType> {
         if (!this.config) {
-            const files = await findUpAll('.ghtrickrc', {
+            const files = await findUpAll('.gbeltrc', {
                 cwd: process.cwd(),
             });
 

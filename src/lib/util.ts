@@ -6,7 +6,7 @@ const sanitizeString = (value: string) => TextConverter.toKebabSpecial(
     value,
 ).toLowerCase().replace(/[^a-z0-9-]/g, '');
 
-export const composeBranchName = (description: BranchDescriptionType) => `${description.type}/${sanitizeString(
+export const composeBranchName = (description: BranchDescriptionType) => `${description.type}${description.scope ? `(${sanitizeString(description.scope)})` : ''}/${sanitizeString(
     description.title,
 )}-${sanitizeString(description.id)}`;
 

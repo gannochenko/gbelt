@@ -17,29 +17,29 @@
 <br />
 <p align="center">
   <!--
-  <a href="https://github.com/gannochenko/ghtrick">
+  <a href="https://github.com/gannochenko/gbelt">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
   -->
 
   <h3 align="center">😱 + 😰 + 😅 = 😎</h3>
-  <h3 align="center">GitHub Trick</h3>
+  <h3 align="center">GitHub Toolbelt</h3>
 
   <p align="center">
     In two-three words write here what this package does
     <!--
     <br />
-    <a href="https://github.com/gannochenko/ghtrick"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/gannochenko/gbelt"><strong>Explore the docs »</strong></a>
     -->
     <br />
     <br />
     <!--
-    <a href="https://gannochenko.github.io/ghtrick">View Demo</a>
+    <a href="https://gannochenko.github.io/gbelt">View Demo</a>
     ·
     -->
-    <a href="https://github.com/gannochenko/ghtrick/issues">Report Bug</a>
+    <a href="https://github.com/gannochenko/gbelt/issues">Report Bug</a>
     ·
-    <a href="https://github.com/gannochenko/ghtrick/issues">Request Feature</a>
+    <a href="https://github.com/gannochenko/gbelt/issues">Request Feature</a>
   </p>
 </p>
 
@@ -91,14 +91,14 @@ In more than three words tell what this package does and how it works.
 To install the tool globally:
 
 ~~~bash
-yarn add @gannochenko/ghtrick -g;
+yarn add @gannochenko/gbelt -g;
 ~~~
 
 Or, if you want you use it only for the current user:
 
 ~~~bash
 mkdir ~/.node;
-yarn global add @gannochenko/ghtrick --prefix ~/.node;
+yarn global add @gannochenko/gbelt --prefix ~/.node;
 echo "\nexport PATH=${PATH}:${HOME}/.node/bin\n" >> ~/.bash_profile;
 source ~/.bash_profile;
 ~~~
@@ -111,7 +111,7 @@ source ~/.bash_profile;
 Just go to the repository you want to have a new version for, and type there:
 
 ~~~bash
-ghtrick -h;
+gbelt -h;
 ~~~
 
 
@@ -127,11 +127,11 @@ ghtrick -h;
 
 1. Clone the repo
 ```sh
-git clone https://github.com/gannochenko/ghtrick.git
+git clone https://github.com/gannochenko/gbelt.git
 ```
 2. Install NPM packages
 ```sh
-cd ghtrick;
+cd gbelt;
 yarn;
 ```
 3. Run the application
@@ -144,7 +144,7 @@ yarn start;
 
 * bugfixing :)
 
-See the [open issues](https://github.com/gannochenko/ghtrick/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/gannochenko/gbelt/issues) for a list of proposed features (and known issues).
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -167,7 +167,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Sergei Gannochenko - [Linkedin](https://www.linkedin.com/in/gannochenko/)
 
-Project Link: [https://github.com/gannochenko/ghtrick](https://github.com/gannochenko/ghtrick)
+Project Link: [https://github.com/gannochenko/gbelt](https://github.com/gannochenko/gbelt)
 
 <!-- BUILT WITH -->
 ### Built With
@@ -176,18 +176,18 @@ Project Link: [https://github.com/gannochenko/ghtrick](https://github.com/gannoc
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/gannochenko/ghtrick.svg?style=flat-square
-[contributors-url]: https://github.com/gannochenko/ghtrick/graphs/contributors
-[language-shield]: https://img.shields.io/github/languages/top/gannochenko/ghtrick.svg?style=flat-square
-[language-url]: https://github.com/gannochenko/ghtrick
-[forks-shield]: https://img.shields.io/github/forks/gannochenko/ghtrick.svg?style=flat-square
-[forks-url]: https://github.com/gannochenko/ghtrick/network/members
-[stars-shield]: https://img.shields.io/github/stars/gannochenko/ghtrick.svg?style=flat-square
-[stars-url]: https://github.com/gannochenko/ghtrick/stargazers
-[issues-shield]: https://img.shields.io/github/issues/gannochenko/ghtrick.svg?style=flat-square
-[issues-url]: https://github.com/gannochenko/ghtrick/issues
-[license-shield]: https://img.shields.io/github/license/gannochenko/ghtrick.svg?style=flat-square
-[license-url]: https://github.com/gannochenko/ghtrick/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/gannochenko/gbelt.svg?style=flat-square
+[contributors-url]: https://github.com/gannochenko/gbelt/graphs/contributors
+[language-shield]: https://img.shields.io/github/languages/top/gannochenko/gbelt.svg?style=flat-square
+[language-url]: https://github.com/gannochenko/gbelt
+[forks-shield]: https://img.shields.io/github/forks/gannochenko/gbelt.svg?style=flat-square
+[forks-url]: https://github.com/gannochenko/gbelt/network/members
+[stars-shield]: https://img.shields.io/github/stars/gannochenko/gbelt.svg?style=flat-square
+[stars-url]: https://github.com/gannochenko/gbelt/stargazers
+[issues-shield]: https://img.shields.io/github/issues/gannochenko/gbelt.svg?style=flat-square
+[issues-url]: https://github.com/gannochenko/gbelt/issues
+[license-shield]: https://img.shields.io/github/license/gannochenko/gbelt.svg?style=flat-square
+[license-url]: https://github.com/gannochenko/gbelt/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/sergey-gannochenko/
 [product-screenshot]: images/screenshot.png

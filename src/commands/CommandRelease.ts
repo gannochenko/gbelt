@@ -1,5 +1,6 @@
 import { Command as CommanderCommand } from 'commander';
 import debug from 'debug';
+import inquirer from 'inquirer';
 import {
     ActionCallback,
     CommandActionArguments,
@@ -8,11 +9,10 @@ import {
 } from './type';
 import { Application } from '../lib/application';
 import { GitHub } from '../lib/github';
-import { GIT } from '../lib/git';
 import { RC } from '../lib/rc';
-import { composeCommitMessage, getRemoteOrThrow } from '../lib/util';
+import { getRemoteOrThrow } from '../lib/util';
 
-const d = debug('submit');
+const d = debug('release');
 
 const ACTION_CREATE = 'create';
 const ACTION_ACCEPT = 'accept';
@@ -26,7 +26,11 @@ export class CommandRelease {
         program
             .command('release [action]')
             .alias('r')
-            .description('Create and perform a accept')
+            .description(`Create and accept a release. [action] may be one of:
+
+    * ${ACTION_CREATE} - will create a release PR
+    * ${ACTION_ACCEPT} - will merge a currently open release PR
+`)
             .action((action: string, command: CommanderCommand) =>
                 actionCallback({
                     command: this,
@@ -84,57 +88,42 @@ export class CommandRelease {
             }
         }
 
-        console.log(action);
-        console.log(prList);
+        if (action === ACTION_ACCEPT) {
+            if (!prList.length) {
+                console.log(`You don't have any release PR created. Create one with 'gbelt release ${ACTION_CREATE}'.`);
+                return;
+            }
 
-        // const branch = await GIT.getCurrentBranch();
-        //
-        // if (!branch || !branch.description) {
-        //     return;
-        // }
-        // const remoteInfo = await GIT.getRemoteInfo();
-        //
-        // if (!remoteInfo) {
-        //     return;
-        // }
-        //
-        // const config = await RC.getConfig();
-        //
-        // d('Config', config);
-        //
-        // const github = new GitHub();
-        //
-        // const prList = await github.getPRList({
-        //     ...remoteInfo,
-        //     base: config.developmentBranch || undefined,
-        //     head: branch.name,
-        // });
-        //
-        // if (!prList.data.length) {
-        //     console.error(`No PR found for the current feature branch "${branch.name}"`);
-        //     console.error('Make one either on site or via "ghtrick submit".');
-        //     return;
-        // }
-        //
-        // if (prList.data.length > 1) {
-        //     console.error(`There is more than one PR matching the current feature branch "${branch.name}"`);
-        //     console.error('Only one PR is allowed to have.');
-        //     return;
-        // }
-        //
-        // const pr = prList.data[0];
-        //
-        // const result = await github.mergePR({
-        //     ...remoteInfo,
-        //     pull_number: pr.number,
-        //     commit_title: composeCommitMessage(branch.description, pr.number),
-        // });
-        //
-        // if (result.status === 200) {
-        //     // eslint-disable-next-line no-console
-        //     console.log(
-        //         `The feature PR #${pr.number} was successfully merged.`,
-        //     );
-        // }
+            const [ pr ] = prList;
+
+            console.log('You are about to merge something to the release branch. If you have the Continuous Delivery set up, it will most likely trigger the production deployment.');
+            console.log(`You might want to look at your PR again: ${pr.html_url}`);
+            const answers = await inquirer.prompt([
+                {
+                    message: 'Proceed?',
+                    name: 'proceed',
+                    type: 'confirm',
+                    default: false,
+                },
+            ]);
+
+            if (answers.proceed) {
+                console.log('Rock and roll!');
+                const result = await github.mergePR({
+                    ...remoteInfo,
+                    pull_number: pr.number,
+                    commit_title: `Release! (#${pr.number})`,
+                    merge_method: 'merge',
+                });
+
+                if (result.status === 200) {
+                    console.log(
+                        `The release PR #${pr.number} was successfully merged.`,
+                    );
+                }
+            } else {
+                console.log('Wise.');
+            }
+        }
     }
 }

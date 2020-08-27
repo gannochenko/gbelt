@@ -28,7 +28,7 @@ Trace:
 
 npm manifest: 
   {
-      "name": "@gannochenko/ghtrick",
+      "name": "@gannochenko/gbelt",
       "version": "0.0.1",
       "license": "MIT",
       "main": "build.cjs/index.js",
@@ -39,7 +39,7 @@ npm manifest:
           "build.cjs/"
       ],
       "bin": {
-          "ghtrick": "./build.cjs/index.js"
+          "gbelt": "./build.cjs/index.js"
       },
       "scripts": {
           "install-peers": "install-self-peers -- --ignore-scripts",
@@ -74,7 +74,7 @@ npm manifest:
       },
       "repository": {
           "type": "git",
-          "url": "git@github.com:gannochenko/ghtrick.git"
+          "url": "git@github.com:gannochenko/gbelt.git"
       },
       "publishConfig": {
           "access": "public"

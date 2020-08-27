@@ -23,7 +23,7 @@
   -->
 
   <h3 align="center">😱 + 😰 + 😅 = 😎</h3>
-  <h3 align="center">GitHub Trick</h3>
+  <h3 align="center">GitHub Toolbelt</h3>
 
   <p align="center">
     In two-three words write here what this package does

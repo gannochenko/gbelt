@@ -29,7 +29,8 @@ export class CommandRelease {
             .description(`Create and accept a release. [action] may be one of:
 
     * ${ACTION_CREATE} - will create a release PR
-    * ${ACTION_ACCEPT} - will merge a currently open release PR`)
+    * ${ACTION_ACCEPT} - will merge a currently open release PR
+`)
             .action((action: string, command: CommanderCommand) =>
                 actionCallback({
                     command: this,

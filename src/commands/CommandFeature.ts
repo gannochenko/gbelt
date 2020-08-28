@@ -10,7 +10,7 @@ import {
 import { Application } from '../lib/application';
 import { GitHub } from '../lib/github';
 import { RC } from '../lib/rc';
-import { composeBranchName, composeCommitMessage, getRemoteOrThrow } from '../lib/util';
+import { composeBranchName, composeCommitMessage, composePRName, getRemoteOrThrow } from '../lib/util';
 import { GIT } from '../lib/git';
 
 const d = debug('feature');
@@ -141,6 +141,9 @@ export class CommandFeature {
         if (!branch || !branch.description) {
             return;
         }
+
+        const { id } = branch.description;
+
         const remoteInfo = await getRemoteOrThrow();
 
         const config = await RC.getConfig();
@@ -148,11 +151,11 @@ export class CommandFeature {
         d('Config', config);
 
         const github = new GitHub();
-        const body = (await github.getTemplate()).replace(/#TICKET_ID#/g, branch.description.id);
+        const body = (await github.getTemplate()).replace(/#TICKET_ID#/g, id);
         const options = {
             head: branch.name,
             ...remoteInfo,
-            title: `${branch.description.type}: ${branch.description.title} [${branch.description.id}]`,
+            title: composePRName(branch.description),
             base: config.developmentBranch || undefined,
             draft: !!config.useDraftPR,
             body,

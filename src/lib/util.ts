@@ -6,11 +6,13 @@ const sanitizeString = (value: string) => TextConverter.toKebabSpecial(
     value,
 ).toLowerCase().replace(/[^a-z0-9-]/g, '');
 
-export const composeBranchName = (description: BranchDescriptionType) => `${description.type}${description.scope ? `(${sanitizeString(description.scope)})` : ''}/${sanitizeString(
+export const composeBranchName = (description: BranchDescriptionType) => `${description.type}/${sanitizeString(
     description.title,
 )}-${sanitizeString(description.id)}`;
 
-export const composeCommitMessage = (description: BranchDescriptionType, prId?: number) => `${description.type}: ${description.title} [${description.id}]${prId ? ` (#${prId})` : ''}`;
+export const composePRName = (description: BranchDescriptionType) => `${description.type}${description.scope ? `(${description.scope})` : ''}: ${description.title} [${description.id}]`;
+
+export const composeCommitMessage = (description: BranchDescriptionType, prId?: number) => `${composePRName(description)}${prId ? ` (#${prId})` : ''}`;
 
 export const getRemoteOrThrow = async () => {
     const remoteInfo = await GIT.getRemoteInfo();

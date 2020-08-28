@@ -112,7 +112,7 @@ export class CommandFeature {
                         return 'Must not be empty';
                     }
 
-                    return null;
+                    return true;
                 },
             },
             {

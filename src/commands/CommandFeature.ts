@@ -30,9 +30,9 @@ export class CommandFeature {
             .alias('f')
             .description(`Create, publish and accept a feature. [action] may be one of:
 
-    * ${ACTION_BRANCH} - will create a local feature branch
-    * ${ACTION_SUBMIT} - will submit a feature PR
-    * ${ACTION_ACCEPT} - will merge the current feature PR
+    * ${ACTION_BRANCH} - create a local feature branch
+    * ${ACTION_SUBMIT} - submit a feature PR based on the current feature branch
+    * ${ACTION_ACCEPT} - merge the feature PR that matches the current feature branch
 `)
             .action((action: string, command: CommanderCommand) =>
                 actionCallback({
@@ -176,6 +176,8 @@ export class CommandFeature {
         }
         const remoteInfo = await getRemoteOrThrow();
 
+        d('Remote info', remoteInfo);
+
         const config = await RC.getConfig();
 
         d('Config', config);
@@ -187,6 +189,8 @@ export class CommandFeature {
             base: config.developmentBranch || undefined,
             head: branch.name,
         });
+
+        d('PR list', prList);
 
         if (!prList.data.length) {
             console.error(`No PR found for the current feature branch "${branch.name}"`);

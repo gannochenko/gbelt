@@ -35,7 +35,7 @@ export class Application {
         // eslint-disable-next-line no-console
         console.log(
             chalk.red(
-                figlet.textSync('GitHub Trick', { horizontalLayout: 'full' }),
+                figlet.textSync('GitHub ToolBelt', { horizontalLayout: 'full' }),
             ),
         );
 

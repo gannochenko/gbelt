@@ -28,8 +28,8 @@ export class CommandRelease {
             .alias('r')
             .description(`Create and accept a release. [action] may be one of:
 
-    * ${ACTION_CREATE} - will create a release PR
-    * ${ACTION_ACCEPT} - will merge a currently open release PR
+    * ${ACTION_CREATE} - create a release PR
+    * ${ACTION_ACCEPT} - merge the currently open release PR
 `)
             .action((action: string, command: CommanderCommand) =>
                 actionCallback({
@@ -52,7 +52,8 @@ export class CommandRelease {
         }
 
         const config = await RC.getConfig();
-        const github = new GitHub();
+
+        d('Config', config);
 
         if (config.releaseBranch === config.developmentBranch) {
             console.log(
@@ -63,11 +64,17 @@ export class CommandRelease {
 
         const remoteInfo = await getRemoteOrThrow();
 
+        d('Remote info', remoteInfo);
+
+        const github = new GitHub();
+
         const prList = (await github.getPRList({
             ...remoteInfo,
             base: config.releaseBranch,
             head: config.developmentBranch || 'dev',
         })).data;
+
+        d('PR list', prList);
 
         if (action === ACTION_CREATE) {
             if (prList.length) {

@@ -15,7 +15,7 @@ import { getRemoteOrThrow } from '../lib/util';
 const d = debug('release');
 
 const ACTION_CREATE = 'create';
-const ACTION_ACCEPT = 'accept';
+const ACTION_MERGE = 'merge';
 
 @Implements<CommandProcessor>()
 export class CommandRelease {
@@ -29,7 +29,7 @@ export class CommandRelease {
             .description(`Create and accept a release. [action] may be one of:
 
     * ${ACTION_CREATE} - create a release PR
-    * ${ACTION_ACCEPT} - merge the currently open release PR
+    * ${ACTION_MERGE} - merge the currently open release PR
 `)
             .action((action: string, command: CommanderCommand) =>
                 actionCallback({
@@ -47,7 +47,7 @@ export class CommandRelease {
     ) {
         const { action } = args;
 
-        if (action !== ACTION_CREATE && action !== ACTION_ACCEPT) {
+        if (action !== ACTION_CREATE && action !== ACTION_MERGE) {
             throw new Error(`Unknown action: ${action}`);
         }
 
@@ -95,7 +95,7 @@ export class CommandRelease {
             }
         }
 
-        if (action === ACTION_ACCEPT) {
+        if (action === ACTION_MERGE) {
             if (!prList.length) {
                 console.log(`You don't have any release PR created. Create one with 'gbelt release ${ACTION_CREATE}'.`);
                 return;
@@ -103,7 +103,7 @@ export class CommandRelease {
 
             const [ pr ] = prList;
 
-            console.log('You are about to merge something to the release branch. If you have the Continuous Delivery set up, it will most likely trigger the production deployment.');
+            console.log('You are about to merge something into the release branch. If you have the Continuous Delivery set up, it will most likely trigger the production deployment.');
             console.log(`You might want to look at your PR again: ${pr.html_url}`);
             const answers = await inquirer.prompt([
                 {
@@ -115,7 +115,7 @@ export class CommandRelease {
             ]);
 
             if (answers.proceed) {
-                console.log('Rock and roll!');
+                console.log('Rock-n-roll!');
                 const result = await github.mergePR({
                     ...remoteInfo,
                     pull_number: pr.number,
@@ -129,7 +129,7 @@ export class CommandRelease {
                     );
                 }
             } else {
-                console.log('Wise.');
+                console.log('Smart choice.');
             }
         }
     }

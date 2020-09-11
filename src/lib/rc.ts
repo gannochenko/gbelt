@@ -14,7 +14,8 @@ const d = debug('app');
 const defaultSettings = {
     developmentBranch: 'dev',
     releaseBranch: 'master',
-    useDraftPR: true,
+    useDraftPR: false,
+    // branchAutoPush: false,
 };
 
 export class RC {
@@ -29,6 +30,7 @@ export class RC {
             d(files);
 
             if (!files || !files[0]) {
+                d('No config file found, will use the default config');
                 return defaultSettings;
             }
 

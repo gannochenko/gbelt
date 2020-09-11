@@ -10,14 +10,20 @@ import {
 import { Application } from '../lib/application';
 import { GitHub } from '../lib/github';
 import { RC } from '../lib/rc';
-import { composeBranchName, composeCommitMessage, composePRName, getRemoteOrThrow } from '../lib/util';
+import {
+    composeBranchName,
+    composeCommitMessage,
+    composePRName,
+    getBranchOrThrow,
+    getRemoteOrThrow,
+} from '../lib/util';
 import { GIT } from '../lib/git';
 
 const d = debug('feature');
 
 const ACTION_BRANCH = 'branch';
-const ACTION_SUBMIT = 'submit';
-const ACTION_ACCEPT = 'accept';
+const ACTION_CREATE = 'create';
+const ACTION_MERGE = 'merge';
 
 @Implements<CommandProcessor>()
 export class CommandFeature {
@@ -31,8 +37,8 @@ export class CommandFeature {
             .description(`Create, publish and accept a feature. [action] may be one of:
 
     * ${ACTION_BRANCH} - create a local feature branch
-    * ${ACTION_SUBMIT} - submit a feature PR based on the current feature branch
-    * ${ACTION_ACCEPT} - merge the feature PR that matches the current feature branch
+    * ${ACTION_CREATE} - create a feature PR based on the current feature branch
+    * ${ACTION_MERGE} - merge the feature PR that matches the current feature branch
 `)
             .action((action: string, command: CommanderCommand) =>
                 actionCallback({
@@ -52,9 +58,9 @@ export class CommandFeature {
 
         if (action === ACTION_BRANCH) {
             await this.processActionBranch();
-        } else if (action === ACTION_SUBMIT) {
+        } else if (action === ACTION_CREATE) {
             await this.processActionSubmit();
-        } else if (action === ACTION_ACCEPT) {
+        } else if (action === ACTION_MERGE) {
             await this.processActionAccept();
         } else {
             throw new Error(`Unknown action: ${action}`);
@@ -136,18 +142,15 @@ export class CommandFeature {
     }
 
     static async processActionSubmit() {
-        const branch = await GIT.getCurrentBranch();
-
-        if (!branch || !branch.description) {
-            return;
-        }
-
-        const { id } = branch.description;
+        const branch = await getBranchOrThrow();
+        d('Branch info', branch);
 
         const remoteInfo = await getRemoteOrThrow();
+        d('Remote info', remoteInfo);
+
+        const { id } = branch.description!;
 
         const config = await RC.getConfig();
-
         d('Config', config);
 
         const github = new GitHub();
@@ -155,7 +158,7 @@ export class CommandFeature {
         const options = {
             head: branch.name,
             ...remoteInfo,
-            title: composePRName(branch.description),
+            title: composePRName(branch.description!),
             base: config.developmentBranch || undefined,
             draft: !!config.useDraftPR,
             body,
@@ -172,24 +175,20 @@ export class CommandFeature {
     }
 
     static async processActionAccept() {
-        const branch = await GIT.getCurrentBranch();
+        const branch = await getBranchOrThrow();
+        d('Branch info', branch);
 
-        if (!branch || !branch.description) {
-            return;
-        }
         const remoteInfo = await getRemoteOrThrow();
-
         d('Remote info', remoteInfo);
 
         const config = await RC.getConfig();
-
         d('Config', config);
 
         const github = new GitHub();
 
         const prList = await github.getPRList({
             ...remoteInfo,
-            base: config.developmentBranch || undefined,
+            base: config.developmentBranch,
             head: branch.name,
         });
 
@@ -212,7 +211,7 @@ export class CommandFeature {
         const result = await github.mergePR({
             ...remoteInfo,
             pull_number: pr.number,
-            commit_title: composeCommitMessage(branch.description, pr.number),
+            commit_title: composeCommitMessage(branch.description!, pr.number),
         });
 
         if (result.status === 200) {

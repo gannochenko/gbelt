@@ -23,3 +23,13 @@ export const getRemoteOrThrow = async () => {
 
     return remoteInfo;
 };
+
+export const getBranchOrThrow = async () => {
+    const branch = await GIT.getCurrentBranch();
+
+    if (!branch || !branch.description) {
+        throw new Error('Unable to obtain current branch description. Are you in the git repo folder? Was your branch created by gbelt?');
+    }
+
+    return branch;
+};

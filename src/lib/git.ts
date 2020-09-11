@@ -1,5 +1,6 @@
 import execa from 'execa';
 import { BranchDescriptionType } from './type';
+import debug from 'debug';
 
 export const isAvailable = async (cmd: string) => {
     const cmdParts = cmd.trim().split(' ');
@@ -17,6 +18,8 @@ export const isAvailable = async (cmd: string) => {
             return e.code !== 'ENOENT';
         });
 };
+
+const d = debug('git');
 
 export class GIT {
     protected static isGitAvailable: boolean;
@@ -108,11 +111,15 @@ export class GIT {
         });
 
         if (result.exitCode) {
+            d('Command failed to execute');
+            d(result);
             return null;
         }
 
-        const current = result.stdout.match(/\*\s+(.+)\n/m);
+        const current = result.stdout.match(/\*\s+(.+)/m);
         if (!current || !current[1]) {
+            d('No current branch detected');
+            d(current);
             return null;
         }
 
@@ -129,6 +136,7 @@ export class GIT {
         try {
             info.description = JSON.parse(result.stdout) as BranchDescriptionType;
         } catch(e) {
+            d('Was not able to parse the JSON of branch data');
             return info;
         }
 
@@ -147,11 +155,14 @@ export class GIT {
         });
 
         if (result.exitCode) {
+            d('Command failed to execute');
+            d(result);
             return null;
         }
 
         const urlMatch = result.stdout.trim().match(/git@github\.com:(.+)\/(.+)\.git/);
         if (!urlMatch) {
+            d('No remote info available');
             return null;
         }
 

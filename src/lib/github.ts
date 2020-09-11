@@ -3,6 +3,7 @@ import { Octokit } from "@octokit/core";
 import findUpAll from 'find-up-all';
 import { readFile as readFileCb } from 'fs';
 import { promisify } from 'util';
+import debug from 'debug';
 
 const readFile = promisify(readFileCb);
 
@@ -34,6 +35,8 @@ type GitHubPRMergeType = {
     pull_number?: number;
 };
 
+const d = debug('github');
+
 export class GitHub {
     private octokit?: Octokit;
 
@@ -61,20 +64,26 @@ export class GitHub {
         });
 
         if (!files || !files[0]) {
+            d('Template file not found');
             return '';
         }
 
+        d(`Template file found: ${files[0]}`);
         return (await readFile(files[0]).catch(() => '')).toString('utf8');
     }
 
     public async getPRList(options: GitHubPRListType) {
-        return this.getOctokit().request('GET /repos/{owner}/{repo}/pulls', {
+        const requestOptions = {
             base: 'master',
             ...options,
             state: 'open',
             draft: false,
             accept: 'Setting to application/vnd.github.v3+json',
-        });
+        };
+
+        d('Get pull requests', requestOptions);
+
+        return this.getOctokit().request('GET /repos/{owner}/{repo}/pulls', requestOptions);
     }
 
     public async mergePR(options: GitHubPRMergeType) {

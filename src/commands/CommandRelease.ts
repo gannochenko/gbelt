@@ -84,9 +84,9 @@ export class CommandRelease {
 
             const result = await github.createPR({
                 ...remoteInfo,
-                title: 'Release!',
+                title: config.releasePRName,
                 base: config.releaseBranch,
-                head: config.developmentBranch || 'dev',
+                head: config.developmentBranch,
             });
             if (result.data.id) {
                 d('Result', result.data);

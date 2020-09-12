@@ -1,6 +1,6 @@
 import execa from 'execa';
-import { BranchDescriptionType } from './type';
 import debug from 'debug';
+import { BranchDescriptionType } from './type';
 
 export const isAvailable = async (cmd: string) => {
     const cmdParts = cmd.trim().split(' ');
@@ -99,7 +99,9 @@ export class GIT {
         }
     }
 
-    public static async getCurrentBranch(path?: string): Promise<{name: string; description?: BranchDescriptionType} | null> {
+    public static async getCurrentBranch(
+        path?: string,
+    ): Promise<{ name: string; description?: BranchDescriptionType } | null> {
         if (!(await this.isAvailable())) {
             throw new Error('Git is not available');
         }
@@ -129,13 +131,15 @@ export class GIT {
             cwd: cmdPath,
         });
 
-        const info: {name: string; description?: BranchDescriptionType} = {
+        const info: { name: string; description?: BranchDescriptionType } = {
             name,
         };
 
         try {
-            info.description = JSON.parse(result.stdout) as BranchDescriptionType;
-        } catch(e) {
+            info.description = JSON.parse(
+                result.stdout,
+            ) as BranchDescriptionType;
+        } catch (e) {
             d('Was not able to parse the JSON of branch data');
             return info;
         }
@@ -160,7 +164,9 @@ export class GIT {
             return null;
         }
 
-        const urlMatch = result.stdout.trim().match(/git@github\.com:(.+)\/(.+)\.git/);
+        const urlMatch = result.stdout
+            .trim()
+            .match(/git@github\.com:(.+)\/(.+)\.git/);
         if (!urlMatch) {
             d('No remote info available');
             return null;

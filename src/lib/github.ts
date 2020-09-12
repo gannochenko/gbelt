@@ -1,4 +1,4 @@
-import { Octokit } from "@octokit/core";
+import { Octokit } from '@octokit/core';
 // @ts-ignore
 import findUpAll from 'find-up-all';
 import { readFile as readFileCb } from 'fs';
@@ -83,13 +83,19 @@ export class GitHub {
 
         d('Get pull requests', requestOptions);
 
-        return this.getOctokit().request('GET /repos/{owner}/{repo}/pulls', requestOptions);
+        return this.getOctokit().request(
+            'GET /repos/{owner}/{repo}/pulls',
+            requestOptions,
+        );
     }
 
     public async mergePR(options: GitHubPRMergeType) {
-        return this.getOctokit().request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge', {
-            merge_method: 'squash',
-            ...options,
-        });
+        return this.getOctokit().request(
+            'PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge',
+            {
+                merge_method: 'squash',
+                ...options,
+            },
+        );
     }
 }

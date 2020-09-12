@@ -26,11 +26,13 @@ export class CommandRelease {
         program
             .command('release [action]')
             .alias('r')
-            .description(`Create and accept a release. [action] may be one of:
+            .description(
+                `Create and accept a release. [action] may be one of:
 
     * ${ACTION_CREATE} - create a release PR
     * ${ACTION_MERGE} - merge the currently open release PR
-`)
+`,
+            )
             .action((action: string, command: CommanderCommand) =>
                 actionCallback({
                     command: this,
@@ -68,17 +70,21 @@ export class CommandRelease {
 
         const github = new GitHub();
 
-        const prList = (await github.getPRList({
-            ...remoteInfo,
-            base: config.releaseBranch,
-            head: config.developmentBranch || 'dev',
-        })).data;
+        const prList = (
+            await github.getPRList({
+                ...remoteInfo,
+                base: config.releaseBranch,
+                head: config.developmentBranch || 'dev',
+            })
+        ).data;
 
         d('PR list', prList);
 
         if (action === ACTION_CREATE) {
             if (prList.length) {
-                console.log(`A release PR already exists: ${prList[0].html_url}`);
+                console.log(
+                    `A release PR already exists: ${prList[0].html_url}`,
+                );
                 return;
             }
 
@@ -91,20 +97,28 @@ export class CommandRelease {
             if (result.data.id) {
                 d('Result', result.data);
                 // eslint-disable-next-line no-console
-                console.log(`The release PR was created. Check out: ${result.data.html_url}`);
+                console.log(
+                    `The release PR was created. Check out: ${result.data.html_url}`,
+                );
             }
         }
 
         if (action === ACTION_MERGE) {
             if (!prList.length) {
-                console.log(`You don't have any release PR created. Create one with 'gbelt release ${ACTION_CREATE}'.`);
+                console.log(
+                    `You don't have any release PR created. Create one with 'gbelt release ${ACTION_CREATE}'.`,
+                );
                 return;
             }
 
-            const [ pr ] = prList;
+            const [pr] = prList;
 
-            console.log('You are about to merge something into the release branch. If you have the Continuous Delivery set up, it will most likely trigger the production deployment.');
-            console.log(`You might want to look at your PR again: ${pr.html_url}`);
+            console.log(
+                'You are about to merge something into the release branch. If you have the Continuous Delivery set up, it will most likely trigger the production deployment.',
+            );
+            console.log(
+                `You might want to look at your PR again: ${pr.html_url}`,
+            );
             const answers = await inquirer.prompt([
                 {
                     message: 'Proceed?',

@@ -37,13 +37,13 @@ export class RC {
                 return defaultSettings;
             }
 
-            const [ rcFile ] = files;
+            const [rcFile] = files;
 
             d(`RC file found at: ${rcFile}`);
 
             try {
-                this.config = {...defaultSettings, ...(await import(rcFile))};
-            } catch(e) {
+                this.config = { ...defaultSettings, ...(await import(rcFile)) };
+            } catch (e) {
                 console.error(
                     `Was not able to import the RC file located at: ${rcFile}: ${e.message}`,
                 );

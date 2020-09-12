@@ -34,12 +34,14 @@ export class CommandFeature {
         program
             .command('feature [action]')
             .alias('f')
-            .description(`Create, publish and accept a feature. [action] may be one of:
+            .description(
+                `Create, publish and accept a feature. [action] may be one of:
 
     * ${ACTION_BRANCH} - create a local feature branch
     * ${ACTION_CREATE} - create a feature PR based on the current feature branch
     * ${ACTION_MERGE} - merge the feature PR that matches the current feature branch
-`)
+`,
+            )
             .action((action: string, command: CommanderCommand) =>
                 actionCallback({
                     command: this,
@@ -195,13 +197,17 @@ export class CommandFeature {
         d('PR list', prList);
 
         if (!prList.data.length) {
-            console.error(`No PR found for the current feature branch "${branch.name}"`);
+            console.error(
+                `No PR found for the current feature branch "${branch.name}"`,
+            );
             console.error('Make one either on site or via "gbelt submit".');
             return;
         }
 
         if (prList.data.length > 1) {
-            console.error(`There is more than one PR matching the current feature branch "${branch.name}"`);
+            console.error(
+                `There is more than one PR matching the current feature branch "${branch.name}"`,
+            );
             console.error('Only one PR is allowed to have.');
             return;
         }

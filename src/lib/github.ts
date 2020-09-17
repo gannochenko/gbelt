@@ -43,7 +43,7 @@ export class GitHub {
     private getOctokit() {
         if (!this.octokit) {
             this.octokit = new Octokit({
-                auth: process.env.GHTRICK_TOKEN,
+                auth: process.env.GBELT_GITHUB_TOKEN,
             });
         }
 

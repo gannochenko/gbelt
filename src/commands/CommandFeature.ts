@@ -130,7 +130,7 @@ export class CommandFeature {
             },
         ]);
 
-        const { ticketIdPrefix } = await RC.getConfig();
+        const { ticketIdPrefix, branchAutoPush } = await RC.getConfig();
         if (ticketIdPrefix && !answers.id.startsWith(ticketIdPrefix)) {
             answers.id = `${ticketIdPrefix}${answers.id}`;
         }
@@ -141,6 +141,10 @@ export class CommandFeature {
         const branchDescription = JSON.stringify(answers);
 
         await GIT.createBranch(branchName, branchDescription);
+
+        if (branchAutoPush) {
+
+        }
     }
 
     static async processActionSubmit() {

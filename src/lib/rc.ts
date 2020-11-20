@@ -8,6 +8,7 @@ type RCType = {
     ticketIdPrefix: string;
     useDraftPR: boolean;
     releasePRName: string;
+    branchAutoPush: string;
 };
 
 const d = debug('app');
@@ -18,7 +19,7 @@ const defaultSettings = {
     ticketIdPrefix: '',
     useDraftPR: false,
     releasePRName: 'Next release',
-    // branchAutoPush: false,
+    branchAutoPush: false,
 };
 
 export class RC {

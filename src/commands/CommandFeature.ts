@@ -70,6 +70,8 @@ export class CommandFeature {
     }
 
     static async processActionBranch() {
+        const { ticketIdPrefix, branchAutoPush } = await RC.getConfig();
+
         const answers = await inquirer.prompt([
             {
                 message: 'What kind of ticket are you working on?',
@@ -128,9 +130,15 @@ export class CommandFeature {
                 name: 'id',
                 default: '000',
             },
+            {
+                message: 'Would you like this branch to be pushed?',
+                name: 'branchAutoPush',
+                type: 'confirm',
+                default: true,
+                when: () => branchAutoPush === undefined,
+            },
         ]);
 
-        const { ticketIdPrefix, branchAutoPush } = await RC.getConfig();
         if (ticketIdPrefix && !answers.id.startsWith(ticketIdPrefix)) {
             answers.id = `${ticketIdPrefix}${answers.id}`;
         }
@@ -142,7 +150,7 @@ export class CommandFeature {
 
         await GIT.createBranch(branchName, branchDescription);
 
-        if (branchAutoPush) {
+        if (branchAutoPush === true || answers.branchAutoPush === true) {
             await GIT.pushSetUpstream(branchName);
         }
     }

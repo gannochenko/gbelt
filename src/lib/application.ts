@@ -4,11 +4,17 @@ import figlet from 'figlet';
 import commander from 'commander';
 import process from 'process';
 import debug from 'debug';
+import path from 'path';
+import fs from 'fs';
+import { promisify } from 'util';
 
 import { VERSION } from './constants';
 import { Commands } from '../commands/commands';
 import { CommandAction, CommandProcessor } from '../commands/type';
 import { Nullable, ObjectLiteral } from '../type';
+
+const getFileAccessError = promisify(fs.access);
+const readFile = promisify(fs.readFile);
 
 const d = debug('app');
 
@@ -17,7 +23,7 @@ export class Application {
 
     public async run() {
         await this.showIntro();
-        const command = this.processCLI();
+        const command = await this.processCLI();
         if (!command) {
             // eslint-disable-next-line no-console
             console.log('No command specified. Try -h for available commands.');
@@ -44,7 +50,7 @@ export class Application {
         this.introShown = true;
     }
 
-    private processCLI(): CommandAction | null {
+    private async processCLI(): Promise<CommandAction | null> {
         const program = new commander.Command();
 
         let commandToRun: Nullable<CommandProcessor> = null;
@@ -52,7 +58,7 @@ export class Application {
 
         program
             .name('gbelt')
-            .version(VERSION, '-v, --version', 'output the current version')
+            .version(await this.getVersion(), '-v, --version', 'output the current version')
             .description('GitHub Toolbelt: helps to automate PR routine')
             .option('-d, --debug', 'output an additional debug info');
 
@@ -79,5 +85,24 @@ export class Application {
                 debug: program.debug,
             },
         };
+    }
+
+    private async getVersion(): Promise<string> {
+        const UNKNOWN_VERSION = '0.0.0';
+
+        const packagePath = path.normalize(path.join(__dirname, '../../package.json'));
+        const accessError = await getFileAccessError(packagePath);
+        // @ts-ignore
+        if (accessError) {
+            return UNKNOWN_VERSION;
+        }
+
+        try {
+            const packageData = JSON.parse((await readFile(packagePath)).toString('utf8'));
+            return packageData.version || UNKNOWN_VERSION;
+        } catch (error) {
+        }
+
+        return UNKNOWN_VERSION;
     }
 }

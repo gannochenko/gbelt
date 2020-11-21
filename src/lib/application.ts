@@ -35,7 +35,9 @@ export class Application {
         // eslint-disable-next-line no-console
         console.log(
             chalk.red(
-                figlet.textSync('GitHub Trick', { horizontalLayout: 'full' }),
+                figlet.textSync("G' GitH ToolBelt", {
+                    horizontalLayout: 'full',
+                }),
             ),
         );
 
@@ -51,7 +53,7 @@ export class Application {
         program
             .name('gbelt')
             .version(VERSION, '-v, --version', 'output the current version')
-            .description('GitHub Trick: helps to automate PR routine')
+            .description('GitHub Toolbelt: helps to automate PR routine')
             .option('-d, --debug', 'output an additional debug info');
 
         // @ts-ignore

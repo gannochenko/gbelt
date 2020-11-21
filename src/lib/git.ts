@@ -1,4 +1,5 @@
 import execa from 'execa';
+import debug from 'debug';
 import { BranchDescriptionType } from './type';
 
 export const isAvailable = async (cmd: string) => {
@@ -17,6 +18,8 @@ export const isAvailable = async (cmd: string) => {
             return e.code !== 'ENOENT';
         });
 };
+
+const d = debug('git');
 
 export class GIT {
     protected static isGitAvailable: boolean;
@@ -96,7 +99,9 @@ export class GIT {
         }
     }
 
-    public static async getCurrentBranch(path?: string): Promise<{name: string; description?: BranchDescriptionType} | null> {
+    public static async getCurrentBranch(
+        path?: string,
+    ): Promise<{ name: string; description?: BranchDescriptionType } | null> {
         if (!(await this.isAvailable())) {
             throw new Error('Git is not available');
         }
@@ -108,11 +113,15 @@ export class GIT {
         });
 
         if (result.exitCode) {
+            d('Command failed to execute');
+            d(result);
             return null;
         }
 
-        const current = result.stdout.match(/\*\s+(.+)\n/m);
+        const current = result.stdout.match(/\*\s+(.+)/m);
         if (!current || !current[1]) {
+            d('No current branch detected');
+            d(current);
             return null;
         }
 
@@ -122,13 +131,16 @@ export class GIT {
             cwd: cmdPath,
         });
 
-        const info: {name: string; description?: BranchDescriptionType} = {
+        const info: { name: string; description?: BranchDescriptionType } = {
             name,
         };
 
         try {
-            info.description = JSON.parse(result.stdout) as BranchDescriptionType;
-        } catch(e) {
+            info.description = JSON.parse(
+                result.stdout,
+            ) as BranchDescriptionType;
+        } catch (e) {
+            d('Was not able to parse the JSON of branch data');
             return info;
         }
 
@@ -147,11 +159,16 @@ export class GIT {
         });
 
         if (result.exitCode) {
+            d('Command failed to execute');
+            d(result);
             return null;
         }
 
-        const urlMatch = result.stdout.trim().match(/git@github\.com:(.+)\/(.+)\.git/);
+        const urlMatch = result.stdout
+            .trim()
+            .match(/git@github\.com:(.+)\/(.+)\.git/);
         if (!urlMatch) {
+            d('No remote info available');
             return null;
         }
 
@@ -173,5 +190,18 @@ export class GIT {
 
     public static getInstallationInfo() {
         return `To install GIT, visit https://git-scm.com/book/en/v2/Getting-Started-Installing-Git`;
+    }
+
+    public static async pushSetUpstream(branch: string, path?: string) {
+        if (!(await this.isAvailable())) {
+            throw new Error('Git is not available');
+        }
+
+        const cmdPath = path || process.cwd();
+
+        await execa('git', ['push', '--set-upstream', 'origin', branch], {
+            cwd: cmdPath,
+            stdio: ['inherit', 'inherit', 'inherit'],
+        });
     }
 }

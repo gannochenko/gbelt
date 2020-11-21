@@ -3,10 +3,12 @@ import findUpAll from 'find-up-all';
 import debug from 'debug';
 
 type RCType = {
-    developmentBranch?: string;
-    releaseBranch?: string;
-    ticketIdPrefix?: string;
-    useDraftPR?: boolean;
+    developmentBranch: string;
+    releaseBranch: string;
+    ticketIdPrefix: string;
+    useDraftPR: boolean;
+    releasePRName: string;
+    branchAutoPush: boolean;
 };
 
 const d = debug('app');
@@ -14,7 +16,10 @@ const d = debug('app');
 const defaultSettings = {
     developmentBranch: 'dev',
     releaseBranch: 'master',
-    useDraftPR: true,
+    ticketIdPrefix: '',
+    useDraftPR: false,
+    releasePRName: 'Next release',
+    branchAutoPush: false,
 };
 
 export class RC {
@@ -29,16 +34,17 @@ export class RC {
             d(files);
 
             if (!files || !files[0]) {
+                d('No config file found, will use the default config');
                 return defaultSettings;
             }
 
-            const [ rcFile ] = files;
+            const [rcFile] = files;
 
             d(`RC file found at: ${rcFile}`);
 
             try {
-                this.config = await import(rcFile);
-            } catch(e) {
+                this.config = { ...defaultSettings, ...(await import(rcFile)) };
+            } catch (e) {
                 console.error(
                     `Was not able to import the RC file located at: ${rcFile}: ${e.message}`,
                 );

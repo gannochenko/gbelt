@@ -10,14 +10,20 @@ import {
 import { Application } from '../lib/application';
 import { GitHub } from '../lib/github';
 import { RC } from '../lib/rc';
-import { composeBranchName, composeCommitMessage, getRemoteOrThrow } from '../lib/util';
+import {
+    composeBranchName,
+    composeCommitMessage,
+    composePRName,
+    getBranchOrThrow,
+    getRemoteOrThrow,
+} from '../lib/util';
 import { GIT } from '../lib/git';
 
 const d = debug('feature');
 
 const ACTION_BRANCH = 'branch';
-const ACTION_SUBMIT = 'submit';
-const ACTION_ACCEPT = 'accept';
+const ACTION_CREATE = 'create';
+const ACTION_MERGE = 'merge';
 
 @Implements<CommandProcessor>()
 export class CommandFeature {
@@ -28,12 +34,14 @@ export class CommandFeature {
         program
             .command('feature [action]')
             .alias('f')
-            .description(`Create, publish and accept a feature. [action] may be one of:
+            .description(
+                `Create, publish and accept a feature. [action] may be one of:
 
-    * ${ACTION_BRANCH} - will create a local feature branch
-    * ${ACTION_SUBMIT} - will submit a feature PR
-    * ${ACTION_ACCEPT} - will merge the current feature PR
-`)
+    * ${ACTION_BRANCH} - create a local feature branch
+    * ${ACTION_CREATE} - create a feature PR based on the current feature branch
+    * ${ACTION_MERGE} - merge the feature PR that matches the current feature branch
+`,
+            )
             .action((action: string, command: CommanderCommand) =>
                 actionCallback({
                     command: this,
@@ -52,9 +60,9 @@ export class CommandFeature {
 
         if (action === ACTION_BRANCH) {
             await this.processActionBranch();
-        } else if (action === ACTION_SUBMIT) {
+        } else if (action === ACTION_CREATE) {
             await this.processActionSubmit();
-        } else if (action === ACTION_ACCEPT) {
+        } else if (action === ACTION_MERGE) {
             await this.processActionAccept();
         } else {
             throw new Error(`Unknown action: ${action}`);
@@ -112,7 +120,7 @@ export class CommandFeature {
                         return 'Must not be empty';
                     }
 
-                    return null;
+                    return true;
                 },
             },
             {
@@ -122,7 +130,7 @@ export class CommandFeature {
             },
         ]);
 
-        const { ticketIdPrefix } = await RC.getConfig();
+        const { ticketIdPrefix, branchAutoPush } = await RC.getConfig();
         if (ticketIdPrefix && !answers.id.startsWith(ticketIdPrefix)) {
             answers.id = `${ticketIdPrefix}${answers.id}`;
         }
@@ -133,26 +141,30 @@ export class CommandFeature {
         const branchDescription = JSON.stringify(answers);
 
         await GIT.createBranch(branchName, branchDescription);
+
+        if (branchAutoPush) {
+            await GIT.pushSetUpstream(branchName);
+        }
     }
 
     static async processActionSubmit() {
-        const branch = await GIT.getCurrentBranch();
+        const branch = await getBranchOrThrow();
+        d('Branch info', branch);
 
-        if (!branch || !branch.description) {
-            return;
-        }
         const remoteInfo = await getRemoteOrThrow();
+        d('Remote info', remoteInfo);
+
+        const { id } = branch.description!;
 
         const config = await RC.getConfig();
-
         d('Config', config);
 
         const github = new GitHub();
-        const body = (await github.getTemplate()).replace(/#TICKET_ID#/g, branch.description.id);
+        const body = (await github.getTemplate()).replace(/#TICKET_ID#/g, id);
         const options = {
             head: branch.name,
             ...remoteInfo,
-            title: `${branch.description.type}: ${branch.description.title} [${branch.description.id}]`,
+            title: composePRName(branch.description!),
             base: config.developmentBranch || undefined,
             draft: !!config.useDraftPR,
             body,
@@ -169,43 +181,59 @@ export class CommandFeature {
     }
 
     static async processActionAccept() {
-        const branch = await GIT.getCurrentBranch();
+        const branch = await getBranchOrThrow();
+        d('Branch info', branch);
 
-        if (!branch || !branch.description) {
-            return;
-        }
         const remoteInfo = await getRemoteOrThrow();
+        d('Remote info', remoteInfo);
 
         const config = await RC.getConfig();
-
         d('Config', config);
 
         const github = new GitHub();
 
         const prList = await github.getPRList({
             ...remoteInfo,
-            base: config.developmentBranch || undefined,
+            base: config.developmentBranch,
             head: branch.name,
         });
 
-        if (!prList.data.length) {
-            console.error(`No PR found for the current feature branch "${branch.name}"`);
+        d('PR list', prList);
+
+        // todo: due to some issue additional filtering is needed
+        const pr = prList.data.find((request: any) => request.head.ref === branch.name);
+
+        if (!pr) {
+            console.error(
+                `No PR found for the current feature branch "${branch.name}"`,
+            );
             console.error('Make one either on site or via "gbelt submit".');
             return;
         }
 
-        if (prList.data.length > 1) {
-            console.error(`There is more than one PR matching the current feature branch "${branch.name}"`);
-            console.error('Only one PR is allowed to have.');
+        if (pr.draft) {
+            console.error('The pull request is in the draft state, can\'t merge. Un-draft it first.');
             return;
         }
 
-        const pr = prList.data[0];
+        console.log('Sometimes you wanna change the message of the PR, to make it prettier for the CHANGELOG.');
+        const answers = await inquirer.prompt([
+            {
+                message: 'Alternative message would be:',
+                name: 'title',
+                default: branch.description!.title,
+            },
+        ]);
+
+        const newDescription = {
+            ...branch.description!,
+            title: answers.title || branch.description!.title,
+        };
 
         const result = await github.mergePR({
             ...remoteInfo,
             pull_number: pr.number,
-            commit_title: composeCommitMessage(branch.description, pr.number),
+            commit_title: composeCommitMessage(newDescription, pr.number),
         });
 
         if (result.status === 200) {

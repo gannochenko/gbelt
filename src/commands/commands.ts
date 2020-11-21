@@ -2,11 +2,12 @@ import { Command as CommanderCommand } from 'commander';
 
 import { CommandFeature } from './CommandFeature';
 import { CommandRelease } from './CommandRelease';
+import { CommandScaffold } from './CommandScaffold';
 import { ActionCallback } from './type';
 
 export class Commands {
     protected static getCommands() {
-        return [CommandFeature, CommandRelease];
+        return [CommandFeature, CommandRelease, CommandScaffold];
     }
 
     public static getDefaultCommand() {

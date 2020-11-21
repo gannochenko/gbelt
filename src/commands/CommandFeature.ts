@@ -24,6 +24,7 @@ const d = debug('feature');
 const ACTION_BRANCH = 'branch';
 const ACTION_CREATE = 'create';
 const ACTION_MERGE = 'merge';
+const ACTION_INFO = 'info';
 
 @Implements<CommandProcessor>()
 export class CommandFeature {
@@ -40,6 +41,7 @@ export class CommandFeature {
     * ${ACTION_BRANCH} - create a local feature branch
     * ${ACTION_CREATE} - create a feature PR based on the current feature branch
     * ${ACTION_MERGE} - merge the feature PR that matches the current feature branch
+    * ${ACTION_INFO} - get information about the current feature
 `,
             )
             .action((action: string, command: CommanderCommand) =>
@@ -64,6 +66,8 @@ export class CommandFeature {
             await this.processActionSubmit();
         } else if (action === ACTION_MERGE) {
             await this.processActionAccept();
+        } else if (action === ACTION_INFO) {
+            await this.processActionInfo();
         } else {
             throw new Error(`Unknown action: ${action}`);
         }
@@ -271,5 +275,72 @@ export class CommandFeature {
                 `The feature PR #${pr.number} was successfully merged.`,
             );
         }
+    }
+
+    static async processActionInfo() {
+        const branch = await getBranchOrThrow();
+        d('Branch info', branch);
+
+        const config = await RC.getConfig();
+        d('Config', config);
+
+        const formatTicket = (ticketId: string) => {
+            if (config.ticketViewURLTemplate) {
+                return config.ticketViewURLTemplate.replace('#TICKET_ID#', ticketId);
+            }
+
+            return ticketId;
+        };
+
+        console.log(`Feature info:
+
+    Branch: ${branch.name}
+    Ticket: ${formatTicket(branch.description!.id)}`);
+
+        const remoteInfo = await getRemoteOrThrow();
+        d('Remote info', remoteInfo);
+
+        if (!remoteInfo) {
+            return;
+        }
+
+        const github = new GitHub();
+        const pr = await github.getPRByBranch(branch.name, config.developmentBranch, remoteInfo);
+
+        const getPRStatus = () => {
+            const result: string[] = [];
+
+            if (pr.state === 'open') {
+                result.push('open');
+            }
+
+            if (pr.draft) {
+                result.push('draft');
+            }
+
+            if (pr.mergeable_state === 'unstable') {
+                result.push('checking');
+            }
+
+            if (pr.mergeable_state === 'clean') {
+                result.push('ready');
+            }
+
+            if (pr.mergeable_state === 'blocked') {
+                result.push('blocked');
+            }
+
+            return result.join(', ');
+        };
+
+        if (!pr) {
+            console.log(`
+No Pull Request info available. The feature is not yet submitted or was already merged.`);
+            return;
+        }
+
+        console.log(`    PR:     ${pr.html_url}
+    Status: ${getPRStatus()}
+`);
     }
 }

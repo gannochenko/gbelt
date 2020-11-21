@@ -8,7 +8,6 @@ import path from 'path';
 import fs from 'fs';
 import { promisify } from 'util';
 
-import { VERSION } from './constants';
 import { Commands } from '../commands/commands';
 import { CommandAction, CommandProcessor } from '../commands/type';
 import { Nullable, ObjectLiteral } from '../type';

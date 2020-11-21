@@ -102,9 +102,9 @@ export class GitHub {
 
     public async getPRList(options: GitHubPRListType) {
         const requestOptions = {
-            base: 'master',
+            // base: 'master',
             ...options,
-            state: 'open',
+            // state: 'open',
             // draft: false,
             accept: 'Setting to application/vnd.github.v3+json',
         };

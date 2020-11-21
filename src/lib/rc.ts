@@ -9,6 +9,7 @@ type RCType = {
     useDraftPR: boolean;
     releasePRName: string;
     branchAutoPush?: boolean;
+    ticketViewURLTemplate?: string;
 };
 
 const d = debug('app');

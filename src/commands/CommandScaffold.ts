@@ -24,9 +24,7 @@ export class CommandScaffold {
         program
             .command('scaffold')
             .alias('s')
-            .description(
-                `Scaffolds a .gbeltrc file in the current folder`,
-            )
+            .description(`Scaffolds a .gbeltrc file in the current folder`)
             .action((action: string) =>
                 actionCallback({
                     command: this,
@@ -46,7 +44,10 @@ export class CommandScaffold {
         d('Config', config);
 
         try {
-            await writeFile(path.join(process.cwd(), '.gbeltrc'), this.getDemoFileContent());
+            await writeFile(
+                path.join(process.cwd(), '.gbeltrc'),
+                this.getDemoFileContent(),
+            );
 
             console.log('Done.');
         } catch (error) {

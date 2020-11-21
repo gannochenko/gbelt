@@ -57,7 +57,11 @@ export class Application {
 
         program
             .name('gbelt')
-            .version(await this.getVersion(), '-v, --version', 'output the current version')
+            .version(
+                await this.getVersion(),
+                '-v, --version',
+                'output the current version',
+            )
             .description('GitHub Toolbelt: helps to automate PR routine')
             .option('-d, --debug', 'output an additional debug info');
 
@@ -89,7 +93,9 @@ export class Application {
     private async getVersion(): Promise<string> {
         const UNKNOWN_VERSION = '0.0.0';
 
-        const packagePath = path.normalize(path.join(__dirname, '../../package.json'));
+        const packagePath = path.normalize(
+            path.join(__dirname, '../../package.json'),
+        );
         const accessError = await getFileAccessError(packagePath);
         // @ts-ignore
         if (accessError) {
@@ -97,9 +103,12 @@ export class Application {
         }
 
         try {
-            const packageData = JSON.parse((await readFile(packagePath)).toString('utf8'));
+            const packageData = JSON.parse(
+                (await readFile(packagePath)).toString('utf8'),
+            );
             return packageData.version || UNKNOWN_VERSION;
         } catch (error) {
+            console.error('Was not able to read the package.json file');
         }
 
         return UNKNOWN_VERSION;

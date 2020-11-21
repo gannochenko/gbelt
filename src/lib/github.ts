@@ -64,11 +64,14 @@ export class GitHub {
 
     public async getPR(number: number, options: GitHubRemoteInfoType) {
         const { owner, repo } = options;
-        return this.getOctokit().request('GET /repos/{owner}/{repo}/pulls/{pull_number}', {
-            owner,
-            repo,
-            pull_number: number,
-        });
+        return this.getOctokit().request(
+            'GET /repos/{owner}/{repo}/pulls/{pull_number}',
+            {
+                owner,
+                repo,
+                pull_number: number,
+            },
+        );
     }
 
     /**
@@ -78,12 +81,15 @@ export class GitHub {
      */
     public async unDraftPR(number: number, options: GitHubRemoteInfoType) {
         const { owner, repo } = options;
-        return this.getOctokit().request('PATCH /repos/{owner}/{repo}/pulls/{pull_number}', {
-            draft: false,
-            owner,
-            repo,
-            pull_number: number,
-        });
+        return this.getOctokit().request(
+            'PATCH /repos/{owner}/{repo}/pulls/{pull_number}',
+            {
+                draft: false,
+                owner,
+                repo,
+                pull_number: number,
+            },
+        );
     }
 
     public async getTemplate(path?: string) {
@@ -117,7 +123,11 @@ export class GitHub {
         );
     }
 
-    public async getPRByBranch(headBranch: string, baseBranch: string, remoteInfo: GitHubRemoteInfoType) {
+    public async getPRByBranch(
+        headBranch: string,
+        baseBranch: string,
+        remoteInfo: GitHubRemoteInfoType,
+    ) {
         const list = await this.getPRList({
             ...remoteInfo,
             base: baseBranch,
@@ -128,7 +138,9 @@ export class GitHub {
             return null;
         }
 
-        const pr = list.data.find((request: any) => request.head.ref === headBranch);
+        const pr = list.data.find(
+            (request: any) => request.head.ref === headBranch,
+        );
 
         if (!pr) {
             return null;

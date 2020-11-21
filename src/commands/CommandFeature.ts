@@ -204,7 +204,11 @@ export class CommandFeature {
 
         const github = new GitHub();
 
-        const pr = await github.getPRByBranch(branch.name, config.developmentBranch, remoteInfo);
+        const pr = await github.getPRByBranch(
+            branch.name,
+            config.developmentBranch,
+            remoteInfo,
+        );
 
         d('PR list', pr);
 
@@ -221,7 +225,9 @@ export class CommandFeature {
         // https://docs.github.com/en/free-pro-team@latest/graphql/reference/enums
 
         if (pr.draft) {
-            console.error(`The pull request is in the draft state, can't merge. Un-draft it first: ${prURL}`);
+            console.error(
+                `The pull request is in the draft state, can't merge. Un-draft it first: ${prURL}`,
+            );
             return;
         }
 
@@ -242,14 +248,18 @@ export class CommandFeature {
 
         if (pr.mergeable_state !== 'clean') {
             if (pr.mergeable_state === 'unstable') {
-                console.error(`The pull request checks were not passed, can't merge: ${prURL}`);
+                console.error(
+                    `The pull request checks were not passed, can't merge: ${prURL}`,
+                );
             } else {
                 console.error(`The pull can't be merged: ${prURL}`);
             }
             return;
         }
 
-        console.log('Sometimes you wanna change the message of the PR, to make it prettier for the CHANGELOG.');
+        console.log(
+            'Sometimes you wanna change the message of the PR, to make it prettier for the CHANGELOG.',
+        );
         console.log(`Current message: ${branch.description!.title}`);
         const answers = await inquirer.prompt([
             {
@@ -286,7 +296,10 @@ export class CommandFeature {
 
         const formatTicket = (ticketId: string) => {
             if (config.ticketViewURLTemplate) {
-                return config.ticketViewURLTemplate.replace('#TICKET_ID#', ticketId);
+                return config.ticketViewURLTemplate.replace(
+                    '#TICKET_ID#',
+                    ticketId,
+                );
             }
 
             return ticketId;
@@ -305,7 +318,11 @@ export class CommandFeature {
         }
 
         const github = new GitHub();
-        const pr = await github.getPRByBranch(branch.name, config.developmentBranch, remoteInfo);
+        const pr = await github.getPRByBranch(
+            branch.name,
+            config.developmentBranch,
+            remoteInfo,
+        );
 
         const getPRStatus = () => {
             const result: string[] = [];

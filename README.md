@@ -126,18 +126,38 @@ gbelt -h;
 ### Development installation
 
 1. Clone the repo
-```sh
-git clone https://github.com/gannochenko/gbelt.git
-```
+
+    ```sh
+    git clone https://github.com/gannochenko/gbelt.git
+    ```
+
 2. Install NPM packages
-```sh
-cd gbelt;
-yarn;
-```
+
+    ```sh
+    cd gbelt
+    yarn
+    ```
+
 3. Run the application
-```sh
-yarn start;
-```
+
+    ```sh
+    yarn start
+    ```
+
+### Development version available globally
+
+1. Run the link script
+
+    ```sh
+    ./scripts/link.sh
+    ```
+
+2. Run build in watch mode
+
+    ```sh
+    yarn build:watch
+    ```
+3. Use the tool anywhere globally
 
 <!-- ROADMAP -->
 ## Roadmap

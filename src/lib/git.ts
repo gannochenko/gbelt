@@ -191,4 +191,17 @@ export class GIT {
     public static getInstallationInfo() {
         return `To install GIT, visit https://git-scm.com/book/en/v2/Getting-Started-Installing-Git`;
     }
+
+    public static async pushSetUpstream(branch: string, path?: string) {
+        if (!(await this.isAvailable())) {
+            throw new Error('Git is not available');
+        }
+
+        const cmdPath = path || process.cwd();
+
+        await execa('git', ['push', '--set-upstream', 'origin', branch], {
+            cwd: cmdPath,
+            stdio: ['inherit', 'inherit', 'inherit'],
+        });
+    }
 }

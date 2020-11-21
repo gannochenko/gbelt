@@ -77,7 +77,7 @@ export class GitHub {
             base: 'master',
             ...options,
             state: 'open',
-            draft: false,
+            // draft: false,
             accept: 'Setting to application/vnd.github.v3+json',
         };
 

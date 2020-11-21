@@ -8,7 +8,7 @@ type RCType = {
     ticketIdPrefix: string;
     useDraftPR: boolean;
     releasePRName: string;
-    branchAutoPush: string;
+    branchAutoPush: boolean;
 };
 
 const d = debug('app');

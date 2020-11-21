@@ -143,7 +143,7 @@ export class CommandFeature {
         await GIT.createBranch(branchName, branchDescription);
 
         if (branchAutoPush) {
-
+            await GIT.pushSetUpstream(branchName);
         }
     }
 
@@ -200,7 +200,10 @@ export class CommandFeature {
 
         d('PR list', prList);
 
-        if (!prList.data.length) {
+        // todo: due to some issue additional filtering is needed
+        const pr = prList.data.find((request: any) => request.head.ref === branch.name);
+
+        if (!pr) {
             console.error(
                 `No PR found for the current feature branch "${branch.name}"`,
             );
@@ -208,20 +211,29 @@ export class CommandFeature {
             return;
         }
 
-        if (prList.data.length > 1) {
-            console.error(
-                `There is more than one PR matching the current feature branch "${branch.name}"`,
-            );
-            console.error('Only one PR is allowed to have.');
+        if (pr.draft) {
+            console.error('The pull request is in the draft state, can\'t merge. Un-draft it first.');
             return;
         }
 
-        const pr = prList.data[0];
+        console.log('Sometimes you wanna change the message of the PR, to make it prettier for the CHANGELOG.');
+        const answers = await inquirer.prompt([
+            {
+                message: 'Alternative message would be:',
+                name: 'title',
+                default: branch.description!.title,
+            },
+        ]);
+
+        const newDescription = {
+            ...branch.description!,
+            title: answers.title || branch.description!.title,
+        };
 
         const result = await github.mergePR({
             ...remoteInfo,
             pull_number: pr.number,
-            commit_title: composeCommitMessage(branch.description!, pr.number),
+            commit_title: composeCommitMessage(newDescription, pr.number),
         });
 
         if (result.status === 200) {

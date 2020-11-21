@@ -200,16 +200,9 @@ export class CommandFeature {
 
         const github = new GitHub();
 
-        const prList = await github.getPRList({
-            ...remoteInfo,
-            base: config.developmentBranch,
-            head: branch.name,
-        });
+        const pr = await github.getPRByBranch(branch.name, config.developmentBranch, remoteInfo);
 
-        d('PR list', prList);
-
-        // todo: due to some issue additional filtering is needed
-        const pr = prList.data.find((request: any) => request.head.ref === branch.name);
+        d('PR list', pr);
 
         if (!pr) {
             console.error(
@@ -219,17 +212,45 @@ export class CommandFeature {
             return;
         }
 
+        const prURL = pr.html_url;
+
+        // https://docs.github.com/en/free-pro-team@latest/graphql/reference/enums
+
         if (pr.draft) {
-            console.error('The pull request is in the draft state, can\'t merge. Un-draft it first.');
+            console.error(`The pull request is in the draft state, can't merge. Un-draft it first: ${prURL}`);
+            return;
+        }
+
+        if (pr.state !== 'open') {
+            console.error(`The pull request was closed, can't merge: ${prURL}`);
+            return;
+        }
+
+        if (pr.locked) {
+            console.error(`The pull request is locked, can't merge: ${prURL}`);
+            return;
+        }
+
+        if (pr.merged) {
+            console.error(`The pull request was already merged: ${prURL}`);
+            return;
+        }
+
+        if (pr.mergeable_state !== 'clean') {
+            if (pr.mergeable_state === 'unstable') {
+                console.error(`The pull request checks were not passed, can't merge: ${prURL}`);
+            } else {
+                console.error(`The pull can't be merged: ${prURL}`);
+            }
             return;
         }
 
         console.log('Sometimes you wanna change the message of the PR, to make it prettier for the CHANGELOG.');
+        console.log(`Current message: ${branch.description!.title}`);
         const answers = await inquirer.prompt([
             {
                 message: 'Alternative message would be:',
                 name: 'title',
-                default: branch.description!.title,
             },
         ]);
 

@@ -7,14 +7,18 @@ import debug from 'debug';
 
 const readFile = promisify(readFileCb);
 
-type GitHubPRType = {
+type GitHubRemoteInfoType = {
     owner: string;
     repo: string;
+};
+
+type GitHubPRType = GitHubRemoteInfoType & {
     title: string;
     body?: string;
     head: string;
     base?: string;
     draft?: boolean;
+    id?: string;
 };
 
 type GitHubPRListType = {
@@ -58,6 +62,30 @@ export class GitHub {
         });
     }
 
+    public async getPR(number: number, options: GitHubRemoteInfoType) {
+        const { owner, repo } = options;
+        return this.getOctokit().request('GET /repos/{owner}/{repo}/pulls/{pull_number}', {
+            owner,
+            repo,
+            pull_number: number,
+        });
+    }
+
+    /**
+     * Does not work
+     * @param number
+     * @param options
+     */
+    public async unDraftPR(number: number, options: GitHubRemoteInfoType) {
+        const { owner, repo } = options;
+        return this.getOctokit().request('PATCH /repos/{owner}/{repo}/pulls/{pull_number}', {
+            draft: false,
+            owner,
+            repo,
+            pull_number: number,
+        });
+    }
+
     public async getTemplate(path?: string) {
         const files = await findUpAll('.github/PULL_REQUEST_TEMPLATE.md', {
             cwd: path || process.cwd(),
@@ -87,6 +115,32 @@ export class GitHub {
             'GET /repos/{owner}/{repo}/pulls',
             requestOptions,
         );
+    }
+
+    public async getPRByBranch(headBranch: string, baseBranch: string, remoteInfo: GitHubRemoteInfoType) {
+        const list = await this.getPRList({
+            ...remoteInfo,
+            base: baseBranch,
+            head: headBranch,
+        });
+
+        if (!(list && list.data && list.data.length)) {
+            return null;
+        }
+
+        const pr = list.data.find((request: any) => request.head.ref === headBranch);
+
+        if (!pr) {
+            return null;
+        }
+
+        const detailedPR = await this.getPR(pr.number, remoteInfo);
+
+        if (!(detailedPR && detailedPR.data)) {
+            return null;
+        }
+
+        return detailedPR.data;
     }
 
     public async mergePR(options: GitHubPRMergeType) {

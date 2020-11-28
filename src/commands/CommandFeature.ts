@@ -260,6 +260,9 @@ export class CommandFeature {
         console.log(
             'Sometimes you wanna change the message of the PR, to make it prettier for the CHANGELOG.',
         );
+        console.log(
+            'Careful, this message could be seen by thousands of people!',
+        );
         console.log(`Current message: ${branch.description!.title}`);
         const answers = await inquirer.prompt([
             {
@@ -284,6 +287,19 @@ export class CommandFeature {
             console.log(
                 `The feature PR #${pr.number} was successfully merged.`,
             );
+
+            const branchAnswer = await inquirer.prompt([
+                {
+                    message: 'Delete the feature branch locally?',
+                    name: 'delete_branch',
+                    type: 'confirm',
+                    default: true,
+                },
+            ]);
+
+            if (branchAnswer.delete_branch) {
+                await GIT.deleteBranch(branch.name);
+            }
         }
     }
 

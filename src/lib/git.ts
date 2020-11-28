@@ -204,4 +204,17 @@ export class GIT {
             stdio: ['inherit', 'inherit', 'inherit'],
         });
     }
+
+    public static async deleteBranch(branch: string, path?: string) {
+        if (!(await this.isAvailable())) {
+            throw new Error('Git is not available');
+        }
+
+        const cmdPath = path || process.cwd();
+
+        await execa('git', ['branch', '-D', branch], {
+            cwd: cmdPath,
+            stdio: ['inherit', 'inherit', 'inherit'],
+        });
+    }
 }

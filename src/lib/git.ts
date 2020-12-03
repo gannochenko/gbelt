@@ -46,28 +46,41 @@ export class GIT {
         });
     }
 
-    public static async checkout(path: string, branch: string) {
+    public static async fetch(branch: string, path?: string) {
         if (!(await this.isAvailable())) {
             throw new Error('Git is not available');
         }
 
+        const cmdPath = path || process.cwd();
+
         await execa('git', ['fetch', 'origin', branch], {
-            cwd: path,
-            stdio: ['inherit', 'inherit', 'inherit'],
-        });
-        await execa('git', ['checkout', branch], {
-            cwd: path,
+            cwd: cmdPath,
             stdio: ['inherit', 'inherit', 'inherit'],
         });
     }
 
-    public static async pull(path: string, branch: string) {
+    public static async checkout(branch: string, path?: string) {
         if (!(await this.isAvailable())) {
             throw new Error('Git is not available');
         }
 
-        await execa('git', ['pull', 'origin', branch], {
-            cwd: path,
+        const cmdPath = path || process.cwd();
+
+        await execa('git', ['checkout', branch], {
+            cwd: cmdPath,
+            stdio: ['inherit', 'inherit', 'inherit'],
+        });
+    }
+
+    public static async pull(branch: string, remote = 'origin', path?: string) {
+        if (!(await this.isAvailable())) {
+            throw new Error('Git is not available');
+        }
+
+        const cmdPath = path || process.cwd();
+
+        await execa('git', ['pull', remote, branch], {
+            cwd: cmdPath,
             stdio: ['inherit', 'inherit', 'inherit'],
         });
     }

@@ -22,7 +22,7 @@ import { GIT } from '../lib/git';
 const d = debug('feature');
 
 const ACTION_BRANCH = 'branch';
-const ACTION_CREATE = 'create';
+const ACTION_CREATE = 'submit';
 const ACTION_MERGE = 'merge';
 const ACTION_INFO = 'info';
 
@@ -288,17 +288,29 @@ export class CommandFeature {
                 `The feature PR #${pr.number} was successfully merged.`,
             );
 
-            const branchAnswer = await inquirer.prompt([
+            const devBranch = config.developmentBranch;
+
+            await GIT.checkout(devBranch);
+
+            const afterAnswers = await inquirer.prompt([
                 {
                     message: 'Delete the feature branch locally?',
                     name: 'delete_branch',
                     type: 'confirm',
                     default: true,
                 },
+                {
+                    message: `Pull the "${devBranch}" branch to get the latest changes?`,
+                    name: 'pull_dev',
+                    type: 'confirm',
+                    default: true,
+                },
             ]);
-
-            if (branchAnswer.delete_branch) {
+            if (afterAnswers.delete_branch) {
                 await GIT.deleteBranch(branch.name);
+            }
+            if (afterAnswers.pull_dev) {
+                await GIT.pull(devBranch);
             }
         }
     }

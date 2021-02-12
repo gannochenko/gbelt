@@ -7,10 +7,14 @@ const sanitizeString = (value: string) =>
         .toLowerCase()
         .replace(/[^a-z0-9-]/g, '');
 
-export const composeBranchName = (description: BranchDescriptionType) =>
-    `${description.type}/${sanitizeString(description.title)}-${sanitizeString(
-        description.id,
-    )}`;
+export const composeBranchName = (description: BranchDescriptionType) => {
+    let result = `${description.type}/${sanitizeString(description.title)}`;
+    if (description.id.length) {
+        result = `${result}-${sanitizeString(description.id)}`;
+    }
+
+    return result;
+};
 
 export const composePRName = (description: BranchDescriptionType) =>
     `${description.type}${description.scope ? `(${description.scope})` : ''}: ${

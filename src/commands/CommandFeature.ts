@@ -22,7 +22,8 @@ import { GIT } from '../lib/git';
 const d = debug('feature');
 
 const ACTION_BRANCH = 'branch';
-const ACTION_CREATE = 'submit';
+const ACTION_CREATE = 'create';
+const ACTION_SUBMIT = 'submit';
 const ACTION_MERGE = 'merge';
 const ACTION_INFO = 'info';
 
@@ -38,8 +39,8 @@ export class CommandFeature {
             .description(
                 `Create, publish and accept a feature. [action] may be one of:
 
-    * ${ACTION_BRANCH} - create a local feature branch
-    * ${ACTION_CREATE} - create a feature PR based on the current feature branch
+    * ${ACTION_CREATE} - create a local feature branch
+    * ${ACTION_SUBMIT} - create a feature PR based on the current feature branch
     * ${ACTION_MERGE} - merge the feature PR that matches the current feature branch
     * ${ACTION_INFO} - get information about the current feature
 `,
@@ -60,9 +61,9 @@ export class CommandFeature {
     ) {
         const { action } = args;
 
-        if (action === ACTION_BRANCH) {
+        if (action === ACTION_BRANCH || action === ACTION_CREATE) {
             await this.processActionBranch();
-        } else if (action === ACTION_CREATE) {
+        } else if (action === ACTION_SUBMIT) {
             await this.processActionSubmit();
         } else if (action === ACTION_MERGE) {
             await this.processActionAccept();
@@ -132,7 +133,7 @@ export class CommandFeature {
             {
                 message: 'What is the ticket ID?',
                 name: 'id',
-                default: '000',
+                default: '',
             },
             {
                 message: 'Would you like this branch to be pushed?',
@@ -143,7 +144,11 @@ export class CommandFeature {
             },
         ]);
 
-        if (ticketIdPrefix && !answers.id.startsWith(ticketIdPrefix)) {
+        if (
+            ticketIdPrefix &&
+            answers.id.length &&
+            !answers.id.startsWith(ticketIdPrefix)
+        ) {
             answers.id = `${ticketIdPrefix}${answers.id}`;
         }
 
@@ -172,7 +177,10 @@ export class CommandFeature {
         d('Config', config);
 
         const github = new GitHub();
-        const body = (await github.getTemplate()).replace(/#TICKET_ID#/g, id);
+        const body = (await github.getTemplate()).replace(
+            /#TICKET_ID#/g,
+            id.length ? id : '000',
+        );
         const options = {
             head: branch.name,
             ...remoteInfo,

@@ -1,6 +1,7 @@
 // @ts-ignore
 import findUpAll from 'find-up-all';
 import debug from 'debug';
+// import { BranchDescriptionType } from './type';
 
 type RCType = {
     developmentBranch: string;
@@ -10,6 +11,7 @@ type RCType = {
     releasePRName: string;
     branchAutoPush?: boolean;
     ticketViewURLTemplate?: string;
+    // formatBranchName?: (featureData: BranchDescriptionType) => string;
 };
 
 const d = debug('app');

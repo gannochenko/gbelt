@@ -16,10 +16,17 @@ export const composeBranchName = (description: BranchDescriptionType) => {
     return result;
 };
 
-export const composePRName = (description: BranchDescriptionType) =>
-    `${description.type}${description.scope ? `(${description.scope})` : ''}: ${
-        description.title
-    } [${description.id}]`;
+export const composePRName = (description: BranchDescriptionType) => {
+    let result = `${description.type}${
+        description.scope ? `(${description.scope})` : ''
+    }: ${description.title}`;
+
+    if (description.id.length) {
+        result = `${result} [${description.id}]`;
+    }
+
+    return result;
+};
 
 export const composeCommitMessage = (
     description: BranchDescriptionType,

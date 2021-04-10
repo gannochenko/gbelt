@@ -26,6 +26,7 @@ const ACTION_CREATE = 'create';
 const ACTION_SUBMIT = 'submit';
 const ACTION_MERGE = 'merge';
 const ACTION_INFO = 'info';
+const ACTION_SAVE = 'save';
 
 @Implements<CommandProcessor>()
 export class CommandFeature {
@@ -43,6 +44,7 @@ export class CommandFeature {
     * ${ACTION_SUBMIT} - create a feature PR based on the current feature branch
     * ${ACTION_MERGE} - merge the feature PR that matches the current feature branch
     * ${ACTION_INFO} - get information about the current feature
+    * ${ACTION_SAVE} - creates a local commit with a message "work in progress"
 `,
             )
             .action((action: string, command: CommanderCommand) =>
@@ -69,6 +71,8 @@ export class CommandFeature {
             await this.processActionAccept();
         } else if (action === ACTION_INFO) {
             await this.processActionInfo();
+        } else if (action === ACTION_SAVE) {
+            await this.processActionSave();
         } else {
             throw new Error(`Unknown action: ${action}`);
         }
@@ -395,5 +399,17 @@ No Pull Request info available. The feature is not yet submitted or was already 
         console.log(`    PR:     ${pr.html_url}
     Status: ${getPRStatus()}
 `);
+    }
+
+    static async processActionSave() {
+        const branch = await getBranchOrThrow();
+        d('Branch info', branch);
+
+        if (!(await GIT.hasStage())) {
+            console.log('No changes to commit.');
+            return;
+        }
+
+        await GIT.commit('Work in progress');
     }
 }

@@ -230,4 +230,32 @@ export class GIT {
             stdio: ['inherit', 'inherit', 'inherit'],
         });
     }
+
+    public static async hasStage(path?: string) {
+        if (!(await this.isAvailable())) {
+            throw new Error('Git is not available');
+        }
+
+        const cmdPath = path || process.cwd();
+
+        const { stdout } = await execa('git', ['status'], {
+            cwd: cmdPath,
+            // stdio: ['inherit', 'inherit', 'inherit'],
+        });
+
+        return stdout.indexOf('nothing to commit, working tree clean') < 0;
+    }
+
+    public static async commit(message: string) {
+        if (!(await this.isAvailable())) {
+            throw new Error('Git is not available');
+        }
+
+        const cmdPath = process.cwd();
+
+        await execa('git', ['commit', '-am', message], {
+            cwd: cmdPath,
+            stdio: ['inherit', 'inherit', 'inherit'],
+        });
+    }
 }

@@ -4,10 +4,16 @@ import { CommandFeature } from './CommandFeature';
 import { CommandRelease } from './CommandRelease';
 import { CommandScaffold } from './CommandScaffold';
 import { ActionCallback } from './type';
+import { CommandFeatures } from './CommandFeatures';
 
 export class Commands {
     protected static getCommands() {
-        return [CommandFeature, CommandRelease, CommandScaffold];
+        return [
+            CommandFeature,
+            CommandRelease,
+            CommandScaffold,
+            CommandFeatures,
+        ];
     }
 
     public static getDefaultCommand() {

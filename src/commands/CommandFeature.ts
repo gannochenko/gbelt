@@ -27,6 +27,7 @@ const ACTION_SUBMIT = 'submit';
 const ACTION_MERGE = 'merge';
 const ACTION_INFO = 'info';
 const ACTION_SAVE = 'save';
+const ACTION_LIST = 'list';
 
 @Implements<CommandProcessor>()
 export class CommandFeature {
@@ -45,6 +46,7 @@ export class CommandFeature {
     * ${ACTION_MERGE} - merge the feature PR that matches the current feature branch
     * ${ACTION_INFO} - get information about the current feature
     * ${ACTION_SAVE} - creates a local commit with a message "work in progress"
+    * ${ACTION_LIST} - display feature list
 `,
             )
             .action((action: string, command: CommanderCommand) =>
@@ -73,6 +75,8 @@ export class CommandFeature {
             await this.processActionInfo();
         } else if (action === ACTION_SAVE) {
             await this.processActionSave();
+        } else if (action === ACTION_LIST) {
+            await this.processActionList();
         } else {
             throw new Error(`Unknown action: ${action}`);
         }
@@ -411,5 +415,49 @@ No Pull Request info available. The feature is not yet submitted or was already 
         }
 
         await GIT.commit('Work in progress');
+    }
+
+    static async processActionList() {
+        const config = await RC.getConfig();
+        d('Config', config);
+
+        const { developmentBranch, releaseBranch, ticketIdPrefix } = config;
+
+        const list = await GIT.getBranches();
+        const result = [];
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const branch of list) {
+            if (branch !== developmentBranch && branch !== releaseBranch) {
+                try {
+                    // eslint-disable-next-line no-await-in-loop
+                    const info = await GIT.getBranchInfo(branch);
+                    result.push(info);
+                } catch (e) {}
+            }
+        }
+
+        console.log('Current features:\n');
+        result.forEach((info) => {
+            console.log(
+                `   * ${composeCommitMessage(
+                    info.description!,
+                    undefined,
+                    config,
+                )}`,
+            );
+        });
+        console.log('');
+
+        // console.log(list);
+        // const branch = await getBranchOrThrow();
+        // d('Branch info', branch);
+        //
+        // if (!(await GIT.hasStage())) {
+        //     console.log('No changes to commit.');
+        //     return;
+        // }
+        //
+        // await GIT.commit('Work in progress');
     }
 }

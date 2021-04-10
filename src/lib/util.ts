@@ -1,6 +1,7 @@
 import { BranchDescriptionType } from './type';
 import { TextConverter } from './text-converter';
 import { GIT } from './git';
+import { RCType } from './rc';
 
 const sanitizeString = (value: string) =>
     TextConverter.toKebabSpecial(value)
@@ -16,13 +17,22 @@ export const composeBranchName = (description: BranchDescriptionType) => {
     return result;
 };
 
-export const composePRName = (description: BranchDescriptionType) => {
+export const composePRName = (
+    description: BranchDescriptionType,
+    config?: RCType,
+) => {
     let result = `${description.type}${
         description.scope ? `(${description.scope})` : ''
     }: ${description.title}`;
 
+    const { ticketIdPrefix } = config || { ticketIdPrefix: '' };
+
     if (description.id.length) {
-        result = `${result} [${description.id}]`;
+        result = `${result} [${
+            ticketIdPrefix
+                ? `${ticketIdPrefix}${description.id}`
+                : description.id
+        }]`;
     }
 
     return result;
@@ -31,7 +41,8 @@ export const composePRName = (description: BranchDescriptionType) => {
 export const composeCommitMessage = (
     description: BranchDescriptionType,
     prId?: number,
-) => `${composePRName(description)}${prId ? ` (#${prId})` : ''}`;
+    config?: RCType,
+) => `${composePRName(description, config)}${prId ? ` (#${prId})` : ''}`;
 
 export const getRemoteOrThrow = async () => {
     const remoteInfo = await GIT.getRemoteInfo();

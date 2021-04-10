@@ -121,7 +121,7 @@ export class GIT {
 
         const cmdPath = path || process.cwd();
 
-        let result = await execa('git', ['branch'], {
+        const result = await execa('git', ['branch'], {
             cwd: cmdPath,
         });
 
@@ -140,24 +140,7 @@ export class GIT {
 
         const name = current[1];
 
-        result = await execa('git', ['config', `branch.${name}.description`], {
-            cwd: cmdPath,
-        });
-
-        const info: { name: string; description?: BranchDescriptionType } = {
-            name,
-        };
-
-        try {
-            info.description = JSON.parse(
-                result.stdout,
-            ) as BranchDescriptionType;
-        } catch (e) {
-            d('Was not able to parse the JSON of branch data');
-            return info;
-        }
-
-        return info;
+        return GIT.getBranchInfo(name, cmdPath);
     }
 
     public static async getRemoteInfo(which = 'origin', path?: string) {
@@ -257,5 +240,62 @@ export class GIT {
             cwd: cmdPath,
             stdio: ['inherit', 'inherit', 'inherit'],
         });
+    }
+
+    public static async getBranches() {
+        if (!(await this.isAvailable())) {
+            throw new Error('Git is not available');
+        }
+
+        const cmdPath = process.cwd();
+
+        const { stdout } = await execa(
+            'git',
+            ['show-branch', '--no-color', '--list'],
+            {
+                cwd: cmdPath,
+                // stdio: ['inherit', 'inherit', 'inherit'],
+            },
+        );
+
+        let matches = stdout.match(/\[([^\[\]]+)\]/gm);
+        if (matches) {
+            matches = matches.map((match) =>
+                match.replace('[', '').replace(']', ''),
+            );
+        }
+
+        return matches || [];
+    }
+
+    public static async getBranchInfo(branchName: string, path?: string) {
+        if (!(await this.isAvailable())) {
+            throw new Error('Git is not available');
+        }
+
+        const cmdPath = path || process.cwd();
+
+        const result = await execa(
+            'git',
+            ['config', `branch.${branchName}.description`],
+            {
+                cwd: cmdPath,
+            },
+        );
+
+        const info: { name: string; description?: BranchDescriptionType } = {
+            name: branchName,
+        };
+
+        try {
+            info.description = JSON.parse(
+                result.stdout,
+            ) as BranchDescriptionType;
+        } catch (e) {
+            d('Was not able to parse the JSON of branch data');
+            return info;
+        }
+
+        return info;
     }
 }

@@ -3,7 +3,7 @@ import findUpAll from 'find-up-all';
 import debug from 'debug';
 // import { BranchDescriptionType } from './type';
 
-type RCType = {
+export type RCType = {
     developmentBranch: string;
     releaseBranch: string;
     ticketIdPrefix: string;

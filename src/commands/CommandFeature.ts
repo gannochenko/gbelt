@@ -421,7 +421,7 @@ No Pull Request info available. The feature is not yet submitted or was already 
         const config = await RC.getConfig();
         d('Config', config);
 
-        const { developmentBranch, releaseBranch, ticketIdPrefix } = config;
+        const { developmentBranch, releaseBranch } = config;
 
         const list = await GIT.getBranches();
         const result = [];
@@ -432,7 +432,9 @@ No Pull Request info available. The feature is not yet submitted or was already 
                 try {
                     // eslint-disable-next-line no-await-in-loop
                     const info = await GIT.getBranchInfo(branch);
-                    result.push(info);
+                    if (info && info.description) {
+                        result.push(info);
+                    }
                 } catch (e) {}
             }
         }

@@ -30,6 +30,8 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/ban-ts-ignore": "off",
     "no-useless-constructor": "off",
+    "no-useless-escape": "off",
+    "no-empty": "off",
     "no-console": ["error", {
       "allow": ["error", "log"]
     }],

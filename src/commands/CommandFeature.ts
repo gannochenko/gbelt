@@ -439,14 +439,14 @@ No Pull Request info available. The feature is not yet submitted or was already 
             }
         }
 
-        console.log('Current features:\n');
+        console.log('Current features under development:\n');
         result.forEach((info) => {
             console.log(
                 `   * ${composeCommitMessage(
                     info.description!,
                     undefined,
                     config,
-                )}`,
+                )} (${info.name})`,
             );
         });
         console.log('');

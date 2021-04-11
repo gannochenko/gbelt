@@ -12,7 +12,7 @@ export class Commands {
             CommandFeature,
             CommandRelease,
             CommandScaffold,
-            CommandFeatures,
+            // CommandFeatures,
         ];
     }
 

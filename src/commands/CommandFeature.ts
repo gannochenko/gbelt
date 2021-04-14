@@ -187,7 +187,7 @@ export class CommandFeature {
         d('Config', config);
 
         const github = new GitHub();
-        const body = await this.getTemplate(github, branch.description!);
+        let body = await this.getTemplate(github, branch.description!);
         const options = {
             head: branch.name,
             ...remoteInfo,
@@ -202,6 +202,17 @@ export class CommandFeature {
         const result = await github.createPR(options);
         if (result.data.id) {
             d('Result', result.data);
+
+            if (body.indexOf('#PR_NUMBER#') >= 0) {
+                const prNumber = result.data.number;
+                body = body.replace(/#PR_NUMBER#/g, prNumber);
+                // update the description
+                await github.updatePR(prNumber, {
+                    ...remoteInfo,
+                    body,
+                });
+            }
+
             // eslint-disable-next-line no-console
             console.log(`PR was created. Check out: ${result.data.html_url}`);
         }

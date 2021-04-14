@@ -21,6 +21,8 @@ type GitHubPRType = GitHubRemoteInfoType & {
     id?: string;
 };
 
+type GitHubUpdatePRType = Omit<Partial<GitHubPRType>, 'id' | 'base' | 'head'>;
+
 type GitHubPRListType = {
     owner: string;
     repo: string;
@@ -54,12 +56,24 @@ export class GitHub {
         return this.octokit;
     }
 
+    // https://docs.github.com/en/rest/reference/pulls
     public async createPR(options: GitHubPRType) {
         return this.getOctokit().request('POST /repos/{owner}/{repo}/pulls', {
             base: 'master',
             draft: false,
             ...options,
         });
+    }
+
+    // https://docs.github.com/en/rest/reference/pulls#update-a-pull-request
+    public async updatePR(number: string, options: GitHubUpdatePRType) {
+        return this.getOctokit().request(
+            'POST /repos/{owner}/{repo}/pulls/{pull_number}',
+            {
+                pull_number: number,
+                ...options,
+            },
+        );
     }
 
     public async getPR(number: number, options: GitHubRemoteInfoType) {

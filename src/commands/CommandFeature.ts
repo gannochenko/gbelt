@@ -1,6 +1,7 @@
 import { Command as CommanderCommand } from 'commander';
 import debug from 'debug';
 import inquirer from 'inquirer';
+import ejs from 'ejs';
 import {
     ActionCallback,
     CommandActionArguments,
@@ -18,6 +19,7 @@ import {
     getRemoteOrThrow,
 } from '../lib/util';
 import { GIT } from '../lib/git';
+import { BranchDescriptionType } from '../lib/type';
 
 const d = debug('feature');
 
@@ -185,10 +187,7 @@ export class CommandFeature {
         d('Config', config);
 
         const github = new GitHub();
-        const body = (await github.getTemplate()).replace(
-            /#TICKET_ID#/g,
-            id.length ? id : '000',
-        );
+        const body = await this.getTemplate(github, branch.description!);
         const options = {
             head: branch.name,
             ...remoteInfo,
@@ -461,5 +460,23 @@ No Pull Request info available. The feature is not yet submitted or was already 
         // }
         //
         // await GIT.commit('Work in progress');
+    }
+
+    private static async getTemplate(
+        github: GitHub,
+        description: BranchDescriptionType,
+    ) {
+        let template = await github.getDynamicTemplate();
+        if (template) {
+            template = ejs.render(template, {
+                ...description,
+                ticketId: description.id,
+            });
+        } else {
+            template = await github.getTemplate();
+        }
+
+        const { id } = description;
+        return template.replace(/#TICKET_ID#/g, id.length ? id : '000');
     }
 }

@@ -106,6 +106,20 @@ export class GitHub {
         return (await readFile(files[0]).catch(() => '')).toString('utf8');
     }
 
+    public async getDynamicTemplate(path?: string) {
+        const files = await findUpAll('.github/PULL_REQUEST_TEMPLATE.ejs', {
+            cwd: path || process.cwd(),
+        });
+
+        if (!files || !files[0]) {
+            d('Dynamic template file not found');
+            return '';
+        }
+
+        d(`Dynamic template file found: ${files[0]}`);
+        return (await readFile(files[0]).catch(() => '')).toString('utf8');
+    }
+
     public async getPRList(options: GitHubPRListType) {
         const requestOptions = {
             // base: 'master',

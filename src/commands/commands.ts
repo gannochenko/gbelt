@@ -4,7 +4,7 @@ import { CommandFeature } from './CommandFeature';
 import { CommandRelease } from './CommandRelease';
 import { CommandScaffold } from './CommandScaffold';
 import { ActionCallback } from './type';
-import { CommandFeatures } from './CommandFeatures';
+// import { CommandFeatures } from './CommandFeatures';
 
 export class Commands {
     protected static getCommands() {

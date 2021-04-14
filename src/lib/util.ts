@@ -25,14 +25,10 @@ export const composePRName = (
         description.scope ? `(${description.scope})` : ''
     }: ${description.title}`;
 
-    const { ticketIdPrefix } = config || { ticketIdPrefix: '' };
+    // const { ticketIdPrefix } = config || { ticketIdPrefix: '' };
 
     if (description.id.length) {
-        result = `${result} [${
-            ticketIdPrefix
-                ? `${ticketIdPrefix}${description.id}`
-                : description.id
-        }]`;
+        result = `${result} [${description.id}]`;
     }
 
     return result;

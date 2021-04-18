@@ -27,7 +27,7 @@ export class CommandRelease {
             .command('release [action]')
             .alias('r')
             .description(
-                `Create and accept a release. [action] may be one of:
+                `Create and merge a release. [action] may be one of:
 
     * ${ACTION_CREATE} - create a release PR
     * ${ACTION_MERGE} - merge the currently open release PR

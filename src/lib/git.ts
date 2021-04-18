@@ -85,6 +85,19 @@ export class GIT {
         });
     }
 
+    public static async push(branch: string, remote = 'origin', path?: string) {
+        if (!(await this.isAvailable())) {
+            throw new Error('Git is not available');
+        }
+
+        const cmdPath = path || process.cwd();
+
+        await execa('git', ['push', remote, branch], {
+            cwd: cmdPath,
+            stdio: ['inherit', 'inherit', 'inherit'],
+        });
+    }
+
     public static async createBranch(
         branch: string,
         description?: string,

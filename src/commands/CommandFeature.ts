@@ -29,6 +29,7 @@ const ACTION_SUBMIT = 'submit';
 const ACTION_MERGE = 'merge';
 const ACTION_INFO = 'info';
 const ACTION_SAVE = 'save';
+const ACTION_SAVEPUSH = 'savepush';
 const ACTION_LIST = 'list';
 
 @Implements<CommandProcessor>()
@@ -41,13 +42,14 @@ export class CommandFeature {
             .command('feature [action]')
             .alias('f')
             .description(
-                `Create, publish and accept a feature. [action] may be one of:
+                `Create, submit and merge a feature. [action] may be one of:
 
     * ${ACTION_CREATE} - create a local feature branch
     * ${ACTION_SUBMIT} - create a feature PR based on the current feature branch
     * ${ACTION_MERGE} - merge the feature PR that matches the current feature branch
     * ${ACTION_INFO} - get information about the current feature
     * ${ACTION_SAVE} - creates a local commit with a message "work in progress"
+    * ${ACTION_SAVEPUSH} - creates a local commit with a message "work in progress" and pushes it
     * ${ACTION_LIST} - display feature list
 `,
             )
@@ -77,6 +79,8 @@ export class CommandFeature {
             await this.processActionInfo();
         } else if (action === ACTION_SAVE) {
             await this.processActionSave();
+        } else if (action === ACTION_SAVEPUSH) {
+            await this.processActionSavePush();
         } else if (action === ACTION_LIST) {
             await this.processActionList();
         } else {
@@ -425,6 +429,19 @@ No Pull Request info available. The feature is not yet submitted or was already 
         }
 
         await GIT.commit('Work in progress');
+    }
+
+    static async processActionSavePush() {
+        const branch = await getBranchOrThrow();
+        d('Branch info', branch);
+
+        if (!(await GIT.hasStage())) {
+            console.log('No changes to commit.');
+            return;
+        }
+
+        await GIT.commit('Work in progress');
+        await GIT.push(branch.name);
     }
 
     static async processActionList() {

@@ -1,6 +1,4 @@
-import chalk from 'chalk';
 import clear from 'clear';
-import figlet from 'figlet';
 import commander from 'commander';
 import process from 'process';
 import debug from 'debug';
@@ -36,15 +34,7 @@ export class Application {
             return;
         }
 
-        clear();
-        // eslint-disable-next-line no-console
-        console.log(
-            chalk.red(
-                figlet.textSync("G' GitH ToolBelt", {
-                    horizontalLayout: 'full',
-                }),
-            ),
-        );
+        // clear();
 
         this.introShown = true;
     }
